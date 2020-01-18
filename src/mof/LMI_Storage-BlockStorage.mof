@@ -1,0 +1,1199 @@
+[ Version("0.5.1"), Experimental, Description("This class represents MD RAID devices on the managed system.")]
+class LMI_MDRAIDStorageExtent : LMI_StorageExtent
+{
+    [Implemented(true), Override, Description (
+          "Name of the device, i.e. 'myraid' in case of /dev/md/myraid device "
+          "or 'md0' in case of /dev/md0 device.")]
+    string ElementName;
+
+    [Implemented(true), Description("UUID of the RAID.")]
+    string UUID;
+
+    [Implemented(true), Description("RAID level."),
+        Values{"RAID0", "RAID1", "RAID4", "RAID5", "RAID6", "RAID10"},
+        ValueMap{"0", "1", "4", "5", "6", "10"}]
+    uint16 Level;
+
+};
+
+[ Version("0.5.1"), Experimental, Description("This class represents Logical Volume devices on the managed system.")]
+class LMI_LVStorageExtent : LMI_StorageExtent
+{
+    [Implemented(true), Override, Description (
+          "Name of the Logical Volume.")]
+    string ElementName;
+
+    [Implemented(true), Description("UUID of the Logical Volume.")]
+    string UUID;
+};
+
+[ Version("0.6.0"), Experimental, Description("This class represents Volume Groups. Space in Volume Groups "
+    "can be allocated in units called 'extents'. Only whole extents can be "
+    "allocated, no partial allocation is allowed.")]
+class LMI_VGStoragePool : CIM_StoragePool
+{
+   [Implemented(true), Override, Description (
+        "Unique ID of the Volume Group. It is unique in scope of CIM namespace."
+        " To ensure uniqueness, the ID has following format: LMI:VG:<VG name>.")]
+    string InstanceID;
+
+   [Implemented(true), Override, Description (
+          "Name of the Volume Group.")]
+   string PoolID;
+
+   [Implemented(true), Description("UUID of the Volume Group.")]
+   string UUID;
+
+   [Implemented(true), Description("Volume group extent size."),
+     Units("Bytes")]
+   uint64 ExtentSize;
+
+   [Implemented(true), Description("Total number of extents in this Volume Group.")]
+   uint64 TotalExtents;
+
+   [Implemented(true), Description("Number of available extents in this Volume Group.")]
+   uint64 RemainingExtents;
+
+   [Implemented(true), Override, Description(
+        "Path of the volume group in /dev filesystem")]
+   string Name;
+
+   [Implemented(true)] boolean Primordial;
+   [Implemented(true)] string ElementName;
+   [Implemented(true)] uint64 TotalManagedSpace;
+   [Implemented(true)] uint64 RemainingManagedSpace;
+   [Implemented(true), Override]
+   uint32 GetSupportedSizes(
+         [Experimental, IN, Description(
+             "The type of element for which supported sizes are "
+             "reported. The Thin Provision values are only "
+             "supported when the Thin Provisioning Profile is "
+             "supported; the resulting StorageVolues/LogicalDisk "
+             "shall have ThinlyProvisioned set to true." ),
+          ValueMap { "2", "3", "4", "5", "6" },
+          Values { "Storage Pool", "Storage Volume",
+             "Logical Disk", "Thin Provisioned Volume",
+             "Thin Provisioned Logical Disk" }]
+      uint16 ElementType,
+         [IN, Description (
+             "The StorageSetting for which supported sizes "
+             "should be reported for." )]
+      CIM_StorageSetting REF Goal,
+         [IN, OUT, Description (
+             "List of supported sizes for a Volume/Pool creation "
+             "or modification." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 Sizes[]);
+
+   [Implemented, Override]
+   uint32 GetSupportedSizeRange(
+         [Experimental, IN, Description (
+             "The type of element for which supported size "
+             "ranges are reported. The Thin Provision values are "
+             "only supported when the Thin Provisioning Profile "
+             "is supported; the resulting "
+             "StorageVolues/LogicalDisk shall have "
+             "ThinlyProvisioned set to true." ),
+          ValueMap { "2", "3", "4", "5", "6" },
+          Values { "Storage Pool", "Storage Volume",
+             "Logical Disk", "Thin Provisioned Volume",
+             "Thin Provisioned Logical Disk" }]
+      uint16 ElementType,
+         [IN, Description (
+             "The StorageSetting for which supported size ranges "
+             "should be reported for." )]
+      CIM_StorageSetting REF Goal,
+         [IN, OUT, Description (
+             "The minimum size for a volume/pool in bytes." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 MinimumVolumeSize,
+         [IN, OUT, Description (
+             "The maximum size for a volume/pool in bytes." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 MaximumVolumeSize,
+         [IN, OUT, Description (
+             "A volume/pool size must be a multiple of this "
+             "value which is specified in bytes." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 VolumeSizeDivisor);
+
+
+};
+
+[ Version("0.5.1"), Experimental, Description (
+       "This service allows the active management of a Storage Server. "
+       "It allows jobs to be started for the creation, modification "
+       "and deletion of storage objects (StoragePools, StorageVolumes "
+       "and LogicalDisks)."
+       "\n\n For now, it supports Volume Group creation and modification (CreateOrModifyStoragePool), "
+       "allocation/modification of Logical Volume (CreateOrModifyElementFromStoragePool), "
+       "Creation of MD RAID array () "
+       "and destruction of all this (DeleteStoragePool, ReturnToStoragePool, ). "
+       "\nIn future, it may support creation of MD RAID containers (i.e. another kind of storage pools), "
+       "allocation of MD RAIDs from these containers, "
+       "snapshots of Logical Volumes (AttachReplica), "
+       "advanced Logical Volumes (for example with RAID characteristics), "
+       "thin pools and this Logical Volumes and so on."
+       )
+    ]
+class LMI_StorageConfigurationService : CIM_StorageConfigurationService
+{
+    [ Override, Description(
+          "Starts a job to create (or modify) a StoragePool."
+          "Only Volume Groups can be created or modified using this method."
+          "\nLMI supports only creation of pools from whole StorageExtents, it is not possible to allocate only part of an StorageExtent."
+          "\nOne of the parameters for this "
+          "method is Size. As an input parameter, Size specifies "
+          "the desired size of the pool. "
+          "It must match "
+          "sum of all input extent sizes. Error will be returned if not, with correct Size output parameter value. "
+          "\nAny InPools as parameter will result in error."
+          "\nThe capability "
+          "requirements that the Pool must support are defined "
+          "using the Goal parameter. "
+          "\n This method supports renaming of a Volume Group and adding and removing StorageExtents to/from a Volume Group. "
+          "\nIf 0 is "
+          "returned, then the task completed successfully and the "
+          "use of ConcreteJob was not required. If the task will "
+          "take some time to complete, a ConcreteJob will be "
+          "created and its reference returned in the output "
+          "parameter Job. "
+          "\n This method automatically formats the StorageExtents added to a Volume Group as Physical Volumes." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097", "4098..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+   uint32 CreateOrModifyStoragePool(
+         [IN, Description (
+             "A end user relevant name for the pool being "
+             "created."
+             "\nIf a Volume Group is being created or modified, it is used as the Volume Group name."
+             "\nIf null, then a system supplied default "
+             "name will be used. The value will be stored in the "
+             "\'ElementName\' property for the created pool. If "
+             "not null, this parameter will supply a new name "
+             "when modifying an existing pool." )]
+      string ElementName,
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description (
+             "Reference to an instance of StorageSetting that "
+             "defines the desired capabilities of the "
+             "StoragePool. If set to a null value, the default "
+             "configuration from the source pool will be used. "
+             "If not NULL, this parameter will supply a new Goal "
+             "setting when modifying an existing pool."
+             "\nAs only simple Volume Groups are supported now, no redundancy or stripping may be used. Null is the safest option here. "
+             )]
+      CIM_StorageSetting REF Goal,
+         [IN, OUT, Description (
+             "As an input parameter this specifies the desired "
+             "pool size in bytes. If provided, it must match sum of sizes of all input StorageExtents. "
+             "\nAs an output parameter this "
+             "specifies the size achieved." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 Size,
+         [IN, Description (
+             "This parameter is not supported by LMI and must be null."
+             )]
+      string InPools[],
+         [IN, Description (
+             "Array of strings containing representations of "
+             "references to CIM_StorageExtent instances, that "
+             "are used to create the Pool. "
+             "\nIf a pool is being modified using this method, these "
+             "StorageExtent instances are interpreted as requested members "
+             "of the Volume Groups. All StorageExtents, which are members "
+             "of the Volume Groups and are not listed in InExtents parameter "
+             "are removed from the Volume Group. All Storage Extents, which "
+             "are not members of the Volume Group and are listed in InExtents "
+             "parameter are added to tghe Volume Group."
+             "\nIf null, no extents are removed and/or added to to Volume Group." )]
+      string InExtents[],
+         [IN, OUT, Description (
+             "As an input parameter: if null, creates a new "
+             "StoragePool. If not null, modifies the referenced "
+             "Pool. When returned, it is a reference to the "
+             "resulting StoragePool." )]
+      CIM_StoragePool REF Pool);
+
+    [Override, Implemented(true), Description (
+          "Start a job to delete a StoragePool. The freed space is "
+          "returned source StoragePools (indicated by AllocatedFrom "
+          "StoragePool) or back to underlying storage extents. If 0 "
+          "is returned, the function completed successfully, and no "
+          "ConcreteJob was required. If 4096/0x1000 is returned, a "
+          "ConcreteJob will be started to delete the StoragePool. A "
+          "reference to the Job is returned in the Job parameter." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Method Reserved", "Vendor Specific" }]
+   uint32 DeleteStoragePool(
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description ( "Reference to the pool to delete." )]
+      CIM_StoragePool REF Pool);
+
+   [Implemented(true), Description (
+          "Start a job to delete a Volume Group. If 0 "
+          "is returned, the function completed successfully, and no "
+          "ConcreteJob was required. If 4096/0x1000 is returned, a "
+          "ConcreteJob will be started to delete the StoragePool. A "
+          "reference to the Job is returned in the Job parameter." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Method Reserved", "Vendor Specific" }]
+   uint32 DeleteVG(
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description ( "Reference to the pool to delete." )]
+      CIM_StoragePool REF Pool);
+
+      [Implemented(true), Override, Description (
+          "Start a job to create (or modify) a Logical Volume from a "
+          "LMI_StoragePool. One of the parameters for this method is "
+          "Size. As an input parameter, Size specifies the desired "
+          "size of the element. As an output parameter, it "
+          "specifies the size achieved. The Size is rounded to extent size of the Volume Group. "
+          "Space is taken from the "
+          "input StoragePool. The desired settings for the element "
+          "are specified by the Goal parameter. If the requested "
+          "size cannot be created, no action will be taken, and the "
+          "Return Value will be 4097/0x1001. Also, the output value "
+          "of Size is set to the nearest possible size. "
+          "\nThis method supports renaming or resizing of a Logical Volume."
+          "\n If 0 is "
+          "returned, the function completed successfully and no "
+          "ConcreteJob instance was required. If 4096/0x1000 is "
+          "returned, a ConcreteJob will be started to create the "
+          "element. The Job\'s reference will be returned in the "
+          "output parameter Job." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097", "4098..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+   uint32 CreateOrModifyElementFromStoragePool(
+         [IN, Description (
+             "A end user relevant name for the element being "
+             "created, i.e. name of the Logical Volume. If NULL, then a system supplied default "
+             "name can be used. The value will be stored in the "
+             "\'ElementName\' property for the created element. "
+             "If not NULL, this parameter will supply a new name "
+             "when modifying an existing element." )]
+      string ElementName,
+         [IN, Description (
+             "Enumeration indicating the type of element being "
+             "created or modified. "
+             "\nOnly StorageElement is supported now. "
+             "\nIf the input parameter "
+             "TheElement is specified when the operation is a "
+             "\'modify\', this type value must match the type of "
+             "that instance." ),
+          ValueMap { "0", "1", "2", "3", "4", "5", "6", "..",
+             "32768..65535" },
+          Values { "Unknown", "Reserved", "StorageVolume",
+             "StorageExtent", "LogicalDisk",
+             "ThinlyProvisionedStorageVolume",
+             "ThinlyProvisionedLogicalDisk", "DMTF Reserved",
+             "Vendor Specific" }]
+      uint16 ElementType,
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description (
+             "The requirements for the element to maintain. If "
+             "set to a null value, the default configuration "
+             "from the source pool will be used. This parameter "
+             "should be a reference to a Setting or Profile "
+             "appropriate to the element being created. If not "
+             "NULL, this parameter will supply a new Goal when "
+             "modifying an existing element."
+             "\n As we support only Volume Groups and simple Logical "
+             "Volumes for now, no redundancy or stripping may be "
+             "specified. Null is the safest option here.")]
+      CIM_ManagedElement REF Goal,
+         [IN, OUT, Description (
+             "As an input parameter Size specifies the desired "
+             "size. The Size will be rounded to extent size of the Volume Group. If not NULL, this parameter will supply a "
+             "new size when modifying an existing element. As an "
+             "output parameter Size specifies the size achieved." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 Size,
+         [IN, Description (
+             "The Pool from which to create the element. This "
+             "parameter must be set to null if the input "
+             "parameter TheElement is specified (in the case of "
+             "a \'modify\' operation)." )]
+      CIM_StoragePool REF InPool,
+         [IN, OUT, Description (
+             "As an input parameter: if null, creates a new "
+             "element. If not null, then the method modifies the "
+             "specified element. As an output parameter, it is a "
+             "reference to the resulting element." )]
+      CIM_LogicalElement REF TheElement);
+
+      [Override, Description (
+          "Start a job to create (or modify) a MD RAID "
+          "from specified input StorageExtents. "
+          "Only whole StorageExtents can be added to a RAID."
+          "\nAs an input parameter, Size specifies "
+          "the desired size of the element and must match size of all input StorageVolumes combined in the RAID. "
+          "Use null to avoid this calculation. "
+          "As an output parameter, it specifies the size achieved. "
+          "\n The desired Settings for the element "
+          "are specified by the Goal parameter. "
+          "\n If 0 is returned, the function completed successfully and no "
+          "ConcreteJob instance was required. If 4096/0x1000 is "
+          "returned, a ConcreteJob will be started to create the "
+          "element. The Job\'s reference will be returned in the "
+          "output parameter Job."
+          "\n This method does not support MD RAID modification for now."
+        ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097", "4098..32767", "32768..65535" },
+       Values { "Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+   uint32 CreateOrModifyElementFromElements(
+         [IN, Description (
+             "A end user relevant name for the MD RAID, i.e. /dev/md/<ElementName>. "
+             "If NULL, then a system-supplied default "
+             "name can be used. The value will be stored in the "
+             "\'ElementName\' property for the created element. "
+             "If not NULL, this parameter will supply a new name "
+             "when modifying an existing element." )]
+      string ElementName,
+         [Required, IN, Description (
+             "Enumeration indicating the type of element being "
+             "created or modified. "
+             "\n Only StorageExtent is supported now."
+             "\nIf the input parameter "
+             "TheElement is specified when the operation is a "
+             "\'modify\', this type value must match the type of "
+             "that instance. The actual CIM class of the created "
+             "TheElement can be vendor-specific, but it must be "
+             "a derived class of the appropriate CIM class -- "
+             "i.e., CIM_StorageVolume, CIM_StorageExtent, "
+             "CIM_LogicalDisk, or CIM_StoragePool." ),
+          ValueMap { "0", "1", "2", "3", "4", "5", "6", "7",
+             "..", "32768..65535" },
+          Values { "Unknown", "Reserved", "Storage Volume",
+             "Storage Extent", "Storage Pool", "Logical Disk",
+             "ThinlyProvisionedStorageVolume",
+             "ThinlyProvisionedLogicalDisk", "DMTF Reserved",
+             "Vendor Specific" }]
+      uint16 ElementType,
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description (
+             "The requirements for the element to maintain. If "
+             "set to a null value, the default configuration "
+             "associated with the Service will be used. This "
+             "parameter should be a reference to a Setting, "
+             "SettingData, or Profile appropriate to the element "
+             "being created. If not NULL, this parameter will "
+             "supply a new Goal when modifying an existing "
+             "element." )]
+      CIM_ManagedElement REF Goal,
+         [IN, OUT, Description (
+             "As an input parameter Size specifies the desired "
+             "size. If not NULL, this parameter "
+             " must match resulting size of  the RAID. "
+             "As an "
+             "output parameter Size specifies the size achieved." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 Size,
+         [Required, IN, Description (
+             "Array of references to storage element instances "
+             "that are used to create or modify TheElement." )]
+      CIM_StorageExtent REF InElements[],
+         [IN, OUT, Description (
+             "As an input parameter: if null, creates a new "
+             "element. If not null, then the method modifies the "
+             "specified element. As an output parameter, it is a "
+             "reference to the resulting element." )]
+      CIM_LogicalElement REF TheElement
+      );
+
+    [Description("Create or modify MD RAID array. This method is shortcut to CreateOrModifyElementFromElements "
+        "with the right Goal. Lazy applications can use this method to create or modify MD RAID with the right level, "
+        "without calculation of the Goal setting."
+        "\n Either Level or Goal must be specified. If both are specified, they must match."
+        "\n RAID modification is not yet supported."),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097", "4098..32767", "32768..65535" },
+       Values { "Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+    uint32 CreateOrModifyMDRAID(
+        [IN, Description("Requested RAID level."),
+            Values{"RAID0", "RAID1", "RAID4", "RAID5", "RAID6", "RAID10"},
+            ValueMap{"0", "1", "4", "5", "6", "10"}]
+        uint16 Level,
+
+        [IN, Description("Requested MD RAID name, i.e. if /dev/md/my_name "
+            "is created, the ElementName should be set to \"my_name\". "
+            "If this parameter is not provided, implementation will choose on "
+            "it's own when creating the device.")]
+        string ElementName,
+
+        [IN, Description("List of CIM_StorageExtents which should be part of the RAID. "
+            "Any data of these devices will be destroyed.")]
+        CIM_StorageExtent REF InExtents[],
+
+        [IN, Description("Requested MD RAID setting. It's only for very advanced "
+            "settings, simple applications should use Level parameter.")]
+        LMI_MDRAIDStorageSetting REF Goal,
+
+        [IN, OUT, Description("On input: MD RAID device to modify. Do not use "
+            "this parameter when creating new array."
+            "\n On output: the created MD RAID.")]
+        LMI_MDRAIDStorageExtent REF TheElement,
+
+        [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
+        CIM_ConcreteJob REF Job,
+
+        [IN(False), OUT, Description (
+             "Size of the RAID device." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 Size
+    );
+
+    [Implemented(true), Description("Delete MD RAID array. "
+        "All members are detached from the array and all RAID metadata are "
+        "erased."),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097", "4098..32767", "32768..65535" },
+       Values { "Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+    uint32 DeleteMDRAID(
+        [IN, Description("The MD RAID device to destroy.")]
+        LMI_MDRAIDStorageExtent REF TheElement,
+
+        [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
+        CIM_ConcreteJob REF Job
+    );
+
+    [Description("Create or modify Volume Group. This method is shortcut to CreateOrModifyStoragePool "
+        "with the right Goal. Lazy applications can use this method to create or modify VGs, "
+        "without calculation of the Goal setting."),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "4096",
+          "4097" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved"}]
+    uint32 CreateOrModifyVG(
+        [IN, Description("Requested volume group name. "
+            "If this parameter is not provided, implementation will choose on "
+            "it's own when creating the device."
+            "\n When modifying a Volume Group, the VG will be renamed to this name."
+            )]
+        string ElementName,
+
+        [IN, Description("Only for advanced use, simple application should "
+            "not set this parameter.")]
+        LMI_VGStorageSetting REF Goal,
+
+        [IN, Description("List of all Physical Volumes of the VG."
+            "\n When creating a VG, these devices will be PVs of the VG."
+            "\n When modifying a VG, this is list of new PVs of the VG. Any "
+            "existing PVs, which are not listed in InExtents, will be removed "
+            "from the VG. Any devices, which are listed in InExtents and are "
+            "not PVs of the VG will be added to the VG."
+        )]
+        CIM_StorageExtent REF InExtents[],
+
+        [IN, OUT, Description("On input: VG to modify. Do not use this parameter "
+            "when creating a VG."
+            "\n On output: the created or modified VG.")]
+        LMI_VGStoragePool REF Pool,
+
+        [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
+        CIM_ConcreteJob REF Job,
+
+        [IN(False), OUT, Description (
+             "Size of the volume group." ),
+          Units ( "Bytes" ),
+          PUnit ( "byte" )]
+      uint64 Size
+
+    );
+
+    [Implemented(true),
+    Description("Create or modify Logical Volume. This method is shortcut to CreateOrModifyElementFromStoragePool "
+        "with the right Goal. Lazy applications can use this method to create or modify LVs, "
+        "without calculation of the Goal setting."),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097", "4098..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+    uint32 CreateOrModifyLV(
+        [IN, Description("Requested Logical Volume name. "
+            "If this parameter is not provided, implementation will choose on "
+            "it's own when creating the device."
+            "\n When modifying a LV, the LV will be renamed to this name."
+            )]
+        string ElementName,
+
+        [IN, Description("Requested LV size. It will be rounded to multiples of VG's ExtentSize."
+            "\n When used when modifying a LV, this LV will be resized to this size."
+            "\n Only growing of LVs is supported, shrinking is not supported now."),
+          Units("Bytes")]
+        uint64 Size,
+
+        [IN, Description("Used only when creating a LV. This parameter specifies from which VG should be the LV allocated.")]
+        LMI_VGStoragePool REF InPool,
+
+        [IN, Description("Only for advanced use, simple application should "
+            "not set this parameter.")]
+        LMI_LVStorageSetting REF Goal,
+
+        [IN, OUT, Description("On input: LV to modify. Do not use this parameter "
+            "when creating a LV."
+            "\n On output: the created or modified LV.")]
+        LMI_LVStorageExtent REF TheElement,
+
+        [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
+        CIM_ConcreteJob REF Job
+    );
+
+    [Override, Implemented(true), Description (
+          "Start a job to delete an element previously created from "
+          "a StoragePool. The freed space is returned to the source "
+          "StoragePool. If 0 is returned, the function completed "
+          "successfully and no ConcreteJob was required. If "
+          "4096/0x1000 is returned, a ConcreteJob will be started "
+          "to delete the element. A reference to the Job is "
+          "returned in the Job parameter." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Method Reserved", "Vendor Specific" }]
+   uint32 ReturnToStoragePool(
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description (
+             "Reference to the element to return to the StoragePool."
+              )]
+      CIM_LogicalElement REF TheElement);
+
+    [Implemented(true), Description (
+          "Start a job to delete a  Logical Volume. "
+          "If 0 is returned, the function completed "
+          "successfully and no ConcreteJob was required. If "
+          "4096/0x1000 is returned, a ConcreteJob will be started "
+          "to delete the element. A reference to the Job is "
+          "returned in the Job parameter.\n"
+          "This method is alias of ReturnToStoragePool()." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+          "4097..32767", "32768..65535" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use", "DMTF Reserved",
+          "Method Parameters Checked - Job Started",
+          "Method Reserved", "Vendor Specific" }]
+   uint32 DeleteLV(
+         [IN ( false ), OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job,
+         [IN, Description (
+             "Reference to the element to return to the StoragePool."
+              )]
+      LMI_LVStorageExtent REF TheElement);
+
+    [ Implemented(true) ] uint16 EnabledDefault;
+    [ Implemented(true) ] uint16 EnabledState;
+    [ Implemented(true) ] uint16 HealthState;
+    [ Implemented(true) ] uint16 OperationalStatus[];
+    [ Implemented(true) ] uint16 PrimaryStatus;
+    [ Implemented(true) ] string StartMode;
+    [ Implemented(true) ] boolean Started;
+};
+
+
+[ Version("0.5.1"), Experimental, Abstract, Description("Abstract StorageSetting class. "
+    "This class just defines persistence types of all LMI StorageSetting classes. "
+    "All subclasses of LMI_StorageSetting can be persistently stored by modifying ChangeableType "
+    "property."
+    "\nTransient setting can be deleted during CIMOM restart or after configurable time."
+    "\nIn addition, all LMI_StorageSetting subclasses have Clone() method to easily create copy  the same setting."
+    )]
+class LMI_StorageSetting : CIM_StorageSetting
+{
+      [Implemented(true), Override ( "ChangeableType" ),
+       Description (
+          "Enumeration indicating the type of setting. \"Fixed - "
+          "Not Changeable\" settings are primordial. These setting "
+          "are defined at the implementor of the class. \"Changeable "
+          "- Transient\" is the type of setting produced by the "
+          "\"CreateSetting\" method. A client can subsequently "
+          "request that the implementation persist the generated "
+          "and potentially modified setting indefinately. Only a "
+          "\"Changeable - Transient\" setting SHALL be converted to "
+          "a \"Changeable = Persistent\" setting; the setting SHALL "
+          "NOT be changed back." ),
+       ValueMap { "0", "1", "2" },
+       Values { "Fixed - Not Changeable", "Changeable - Transient",
+          "Changeable - Persistent" }]
+    uint16 ChangeableType;
+
+    [ Implemented(true),
+        Description("Create a copy of this instance. The resulting instance "
+        "will have the same class and the same properties as the original "
+        "instance except ChangeableType, which will be set to "
+        "\"Changeable - Transient\" in the clone, and InstanceID."),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 CloneSetting(
+        [ IN(False), OUT, Description("Created copy.")]
+        LMI_StorageSetting REF Clone
+    );
+
+    [ Implemented(true) ] uint16 DataRedundancyGoal;
+    [ Implemented(true) ] uint16 DataRedundancyMax;
+    [ Implemented(true) ] uint16 DataRedundancyMin;
+    [ Implemented(true) ] uint16 ExtentStripeLength;
+    [ Implemented(true) ] uint16 ExtentStripeLengthMax;
+    [ Implemented(true) ] uint16 ExtentStripeLengthMin;
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] uint16 PackageRedundancyGoal;
+    [ Implemented(true) ] uint16 PackageRedundancyMax;
+    [ Implemented(true) ] uint16 PackageRedundancyMin;
+    [ Implemented(true) ] uint16 ParityLayout;
+};
+
+[ Version("0.5.1"), Experimental, Description("This class defines characteristics of LMI_VGStoragePool which is created or modified by "
+    "CreateOrModifyStoragePool method in the LMI_StorageConfigurationService."
+    "\nCurrently only ExtentSize property is supported.")]
+class LMI_VGStorageSetting : LMI_StorageSetting
+{
+    [ Implemented(true), Description("Size of extents of the Volume Group. The default is 4 MiB and it must be at least 1 MiB and a power of 2. "
+        "Once this value has been set, it is difficult to change it without recreating the volume group which would involve backing up and restoring data on any logical volumes. "
+        "\nIf the volume group metadata uses lvm1 format, extents can vary in size from 8KB to 16GB and there is a limit of 65534 extents in each logical volume.  The default of 4 MiB leads "
+        "to a maximum logical volume size of around 256GiB."
+        "\nIf the volume group metadata uses lvm2 format those restrictions do not apply, but having a large number of extents will slow down the tools but have no impact on I/O performance "
+        "to the logical volume.  The smallest PE is 1KiB."), Units("Bytes")]
+    uint64 ExtentSize;
+};
+
+[ Version("0.5.1"), Experimental, Description("This class defines characteristics of LMI_LVStorageExtent which is created or modified by "
+    "CreateOrModifyElementFromStoragePool method in the LMI_StorageConfigurationService."
+    "\n Currently no properties are defined or supported, only simple Logical Volumes can be created. "
+    "In future, this may be extended to support redundancy and stripping and thin volumes.")]
+class LMI_LVStorageSetting : LMI_StorageSetting
+{
+
+};
+
+[ Version("0.5.1"), Experimental, Description("This class defines characteristics of LMI_MDRAIDStorageExtent which is created or modified by "
+    "CreateOrModifyElementFromElements method in the LMI_StorageConfigurationService."
+    "\n Currently no additional properties are necessary in this class, redundancy and stripping is defined "
+    "by DataRedundancy, PackageRedundancy and ExtentStripeLength."
+    "\n In future, this class may introduce MD RAID properties like metadata format, additional parity layouts etc."
+    )]
+class LMI_MDRAIDStorageSetting : LMI_StorageSetting
+{
+};
+
+[ Version("0.7.0"), Experimental, Description("This class represents capability of LMI_StorageConfigurationService to create Volume Groups. "
+    "It describes, which properties and which values can be used in LMI_VGStorageSetting."
+    "\n There are no additional properties for now."
+    )]
+class LMI_VGStorageCapabilities : CIM_StorageCapabilities
+{
+    [Description("This method creates new instance of LMI_VGStorageSetting. "
+        "Applications then do not need to calculate DataRedundancy, PackageRedundancy and ExtentStripeLength."),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 CreateVGStorageSetting(
+        [IN, Description("List of devices, from which the new Volume Group will be created. "
+            "The created LMI_VGStorageSetting will take redundancy and striping of these devices into account. "
+            "\n That means, to create volume group on top of two devices, the application passes "
+            "InExtents=(FirstExtent, SecondExtent). Resulting LMI_VGStorageSetting will have "
+            "DataRedundancy, PackageRedundancy and ExtentStripeLength as minimum of both input extents, "
+            "indicating that the created Volume Group does not add any additional redundancy or stripping."
+            "\n For example if the application wants to create volume group on top of two RAID1 devices, it passes "
+            "InExtents = (FirstRAID1Extent, SecondRAID1Extent). Resulting LMI_MDRAIDStorageSetting will have "
+            "DataRedundancy, PackageRedundancy and ExtentStripeLength as the minimum of "
+            "the first and the second RAID1 extents."
+        )]
+        CIM_StorageExtent REF InExtents[],
+
+        [IN(False), OUT, Description("Created LMI_StorageSetting.")]
+        LMI_StorageSetting REF Setting);
+
+    [Implemented(true),
+        Description("Default size of Volume Group physical extents."),
+        Units ( "Bytes" ),
+        PUnit ( "byte" )]
+    uint64 ExtentSizeDefault;
+
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] uint16 DataRedundancyDefault;
+    [ Implemented(true) ] uint16 DataRedundancyMax;
+    [ Implemented(true) ] uint16 DataRedundancyMin;
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] boolean NoSinglePointOfFailureDefault;
+    [ Implemented(true) ] uint16 ExtentStripeLengthDefault;
+    [ Implemented(true) ] uint16 PackageRedundancyDefault;
+    [ Implemented(true) ] uint16 PackageRedundancyMax;
+    [ Implemented(true) ] uint16 PackageRedundancyMin;
+
+};
+
+[ Version("0.5.1"), Experimental, Description("This class represents capability of LMI_StorageConfigurationService to create MD RAID arrays. "
+    "It describes, which properties and which values can be used in LMI_MDRAIDStorageSetting."
+    "\n There are no additional properties for now."
+    )]
+class LMI_MDRAIDStorageCapabilities : CIM_StorageCapabilities
+{
+    [Implemented(True),
+        Description("This method creates new instance of LMI_MDRAIDStorageSetting, which will represent given RAID level. "
+        "Applications then do not need to calculate DataRedundancy, PackageRedundancy and ExtentStripeLength."),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 CreateMDRAIDStorageSetting(
+        [IN, Description("Requested level."),
+            ValueMap{"0", "1", "4", "5", "6", "10"},
+            Values{"RAID0", "RAID1", "RAID4", "RAID5", "RAID6", "RAID10"}]
+        uint16 Level,
+
+        [IN, Description("List of devices, from which the new device will be created. "
+            "The created LMI_MDRAIDStorageSetting will take redundancy and striping of these devices into account. "
+            "\n For example, if the application wants to create RAID0 on top of two RAID1 devices, it passes "
+            "InExtents = (FirstRAID1Extent, SecondRAID1Extent) and Level=0. Resulting LMI_MDRAIDStorageSetting will have "
+            "DataRedundancy and PackageRedundancy as the minimum of "
+            "the first and the second RAID1 extents and ExtentStripeLength will be 2 to indicate RAID0 with two devices."
+        )]
+        CIM_StorageExtent REF InExtents[],
+
+        [IN(False), OUT, Description("Created LMI_StorageSetting.")]
+        LMI_StorageSetting REF Setting);
+
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] uint16 DataRedundancyDefault;
+    [ Implemented(true) ] uint16 DataRedundancyMax;
+    [ Implemented(true) ] uint16 DataRedundancyMin;
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] boolean NoSinglePointOfFailureDefault;
+    [ Implemented(true) ] uint16 ExtentStripeLengthDefault;
+    [ Implemented(true) ] uint16 PackageRedundancyDefault;
+    [ Implemented(true) ] uint16 PackageRedundancyMax;
+    [ Implemented(true) ] uint16 PackageRedundancyMin;
+};
+
+
+[ Version("0.5.1"), Experimental, Description("This class represents capabilities of LMI_StorageConfigurationService to create Logical Volumes. "
+    "It describes, which properties and which values can be used in LMI_LVStorageSetting."
+    "\n Each LMI_VGStoragePool has one instance of this class attached, which describes what kind of Logical Volumes can "
+    "be allocated from it. As only basic Logical Volumes are supported, it basically only represents underlying redundancy and stripping"
+    "\n There are no additional properties for now."
+    )]
+class LMI_LVStorageCapabilities : CIM_StorageCapabilities
+{
+    [Implemented(true),
+        Description("This method creates new instance of LMI_LVStorageSetting. "
+        "Applications then do not need to calculate DataRedundancy, PackageRedundancy and ExtentStripeLength. "
+        "Because only basic Logical Volumes without any additional stripping or mirroring are supported, "
+        "this method basically clones LMI_VGStorageSetting to LMI_LVStorageSetting."),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 CreateLVStorageSetting(
+        [IN(False), OUT, Description("Created LMI_StorageSetting.")]
+        LMI_StorageSetting REF Setting);
+
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] uint16 DataRedundancyDefault;
+    [ Implemented(true) ] uint16 DataRedundancyMax;
+    [ Implemented(true) ] uint16 DataRedundancyMin;
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] boolean NoSinglePointOfFailureDefault;
+    [ Implemented(true) ] uint16 ExtentStripeLengthDefault;
+    [ Implemented(true) ] uint16 PackageRedundancyDefault;
+    [ Implemented(true) ] uint16 PackageRedundancyMax;
+    [ Implemented(true) ] uint16 PackageRedundancyMin;
+};
+
+
+[ Version("0.5.1"), Experimental ]
+class LMI_HostedStorageService : CIM_HostedService
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_VGElementCapabilities : CIM_ElementCapabilities
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_MDRAIDElementCapabilities : CIM_ElementCapabilities
+{
+};
+
+
+[ Version("0.5.1"), Experimental ]
+class LMI_MDRAIDBasedOn : CIM_BasedOn
+{
+    [ Implemented(true) ] uint16 OrderIndex;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_MDRAIDElementSettingData : CIM_ElementSettingData
+{
+};
+
+
+[ Version("0.5.1"), Experimental ]
+class LMI_VGAssociatedComponentExtent : CIM_AssociatedComponentExtent
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_VGElementSettingData : CIM_ElementSettingData
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_LVElementCapabilities : CIM_ElementCapabilities
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_LVAllocatedFromStoragePool : CIM_AllocatedFromStoragePool
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_LVElementSettingData : CIM_ElementSettingData
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_LVBasedOn : CIM_BasedOn
+{
+};
+
+
+
+
+[Version("0.5.1"), Experimental, Description("This class represents MD RAID metadata present on a StorageExtent. "
+    "It can be part of existing MD RAID or it can be stray metadata of stopped MD RAID."
+)]
+class LMI_MDRAIDFormat : LMI_DataFormat
+{
+    [Description("UUID of the MD RAID, which is the associated StorageExtent part of.")]
+    string MDUUID;
+};
+
+[Version("0.5.1"), Experimental, Description("This class represents Physical Volume metadata present on a StorageExtent. "
+    "The StorageExtent can be member of existing Volume Group or its Volume Group has been destroyed."
+)]
+class LMI_PVFormat : LMI_DataFormat
+{
+    [Description("UUID of the Physical Volume.")]
+    string UUID;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_MDRAIDFormatResidesOnExtent : LMI_ResidesOnExtent
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_PVFormatResidesOnExtent : LMI_ResidesOnExtent
+{
+};
+
+[ Version("0.5.1"), Experimental, Description("This association connects CIM_System with all"
+    " storage devices available on it.")]
+class LMI_SystemStorageDevice : CIM_SystemDevice
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_BlockStorageStatisticalData : CIM_BlockStorageStatisticalData
+{
+
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] datetime StartStatisticTime;
+    [ Implemented(true) ] datetime StatisticTime;
+    [ Implemented(true) ] datetime SampleInterval;
+    [ Implemented(true) ] uint16 ElementType;
+    [ Implemented(true) ] uint64 TotalIOs;
+    [ Implemented(true) ] uint64 KBytesTransferred;
+    [ Implemented(true) ] uint64 KBytesWritten;
+    [ Implemented(true) ] uint64 IOTimeCounter;
+    [ Implemented(true) ] uint64 ReadIOs;
+    [ Implemented(true) ] uint64 KBytesRead;
+    [ Implemented(true) ] uint64 WriteIOs;
+    [ Implemented(true) ] uint64 IdleTimeCounter;
+};
+
+[ Version("0.5.1"), Experimental, Association ]
+class LMI_StorageElementStatisticalData : CIM_ElementStatisticalData
+{
+    [Key, Override ( "ManagedElement" ),
+        Min ( 1 ),
+        Max ( 1 ),
+        Description (
+            "The ManagedElement for which statistical or metric data "
+            "is defined." )]
+    CIM_StorageExtent REF ManagedElement;
+
+    [Key, Override ( "Stats" ),
+        Description ( "The statistic information/object." )]
+    LMI_BlockStorageStatisticalData REF Stats;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_StorageStatisticsCollection : CIM_StatisticsCollection
+{
+    [ Implemented(true) ] datetime SampleInterval;
+};
+
+[ Version("0.5.1"), Experimental, Association ]
+class LMI_MemberOfStorageStatisticsCollection : CIM_MemberOfCollection
+{
+    [Key, Aggregate, Override("Collection"), Description (
+        "The Collection that aggregates members." )]
+    LMI_StorageStatisticsCollection REF Collection;
+
+    [Key, Override("Member"), Description ( "The aggregated member of the Collection." )]
+    LMI_BlockStorageStatisticalData REF Member;
+};
+
+[ Version("0.5.1"), Experimental, Association ]
+class LMI_HostedStorageStatisticsCollection : CIM_HostedCollection
+{
+    [Override ( "Antecedent" ),
+        Min ( 1 ),
+        Max ( 1 ),
+        Description ( "The scoping system." )]
+    CIM_System REF Antecedent;
+
+    [Override ( "Dependent" ),
+        Description (
+            "The collection defined in the context of a system." )]
+    LMI_StorageStatisticsCollection REF Dependent;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_BlockStatisticsService : CIM_BlockStatisticsService
+{
+    [Implemented(true), Description (
+        "Retrieves statistics in a well-defined bulk format. The "
+        "collection of statistics returned is determined by the "
+        "list of element types passed in to the method and the "
+        "manifests for those types contained in the supplied "
+        "BlockStatisticsManifestCollection. If both the Elements "
+        "and BlockStatisticsManifestCollection parameters are "
+        "supplied, then the types of elements returned is an "
+        "intersection of the element types listed in the Elements "
+        "parameter and the types for which "
+        "BlockStatisticsManifest instances exist in the supplied "
+        "BlockStatisticsManifestCollection. The statistics are "
+        "returned through a well-defined array of strings, whose "
+        "format is specified by the StatisticsFormat parameter, "
+        "that can be parsed to retrieve the desired statistics as "
+        "well as limited information about the elements that "
+        "those metrics describe." ),
+    ValueMap { "0", "1", "2", "3", "4", "5", "..", "4096",
+        "4097", "4098", "4099..32767", "32768..65535" },
+    Values { "Job Completed with No Error", "Not Supported",
+        "Unknown", "Timeout", "Failed", "Invalid Parameter",
+        "Method Reserved",
+        "Method Parameters Checked - Job Started",
+        "Element Not Supported",
+        "Statistics Format Not Supported", "Method Reserved",
+        "Vendor Specific" }]
+    uint32 GetStatisticsCollection(
+        [IN ( false ), OUT, Description (
+            "Reference to the job (may be null if job completed)."
+        )]
+        CIM_ConcreteJob REF Job,
+        [IN, Description (
+            "Element types for which statistics should be "
+            "returned. If not supplied (i.e. parameter is null) "
+            "this parameter is not considered when filtering "
+            "the instances of StatisticalData that will "
+            "populate the Statistics output parameter. If the "
+            "array is not null, but is empty, then no "
+            "statistics will be returned by this method. A "
+            "client SHOULD NOT specify this parameter if it is "
+            "not meaningful (i.e. the service only provides "
+            "statistics for a single type of element)." ),
+        ValueMap { "2", "3", "4", "5", "6", "7", "8", "9",
+            "10", "11", "12", "..", "0x8000.." },
+        Values { "Computer System",
+            "Front-end Computer System", "Peer Computer System",
+            "Back-end Computer System", "Front-end Port",
+            "Back-end Port", "Volume", "Extent", "Disk Drive",
+            "Arbitrary LUs", "Remote Replica Group",
+            "DMTF Reserved", "Vendor Specific" },
+        ModelCorrespondence {
+            "CIM_BlockStorageStatisticalData.ElementType" }]
+        uint16 ElementTypes[],
+        [IN, Description (
+            "The BlockStatisticsManifestCollection that "
+            "contains the manifests that list the metrics to be "
+            "returned for each element type. If not supplied "
+            "(i.e. parameter is null), then all available "
+            "statistics will be returned unfiltered. Only "
+            "elements that match the element type properties "
+            "(if meaningful) of the BlockStatisticsManifest "
+            "instances contained within the "
+            "BlockStatisticsManifestCollection will have data "
+            "returned by this method. If the supplied "
+            "BlockStatisticsManifestCollection does not contain "
+            "any BlockStatisticsManifest instances, then no "
+            "statistics will be returned by this method." )]
+        CIM_BlockStatisticsManifestCollection REF ManifestCollection,
+        [IN, Description (
+            "Specifies the format of the Statistics output "
+            "parameter. \n"
+            "- CSV = Comma Separated Values." ),
+        ValueMap { "0", "1", "2", "..", "0x8000.." },
+        Values { "Unknown", "Other", "CSV", "DMTF Reserved",
+            "Vendor Specific" }]
+        uint16 StatisticsFormat,
+        [OUT, Description (
+            "The statistics for all the elements as determined "
+            "by the Elements, ManifestCollection parameters, "
+            "and StatisticsFormat parameters." ),
+        ModelCorrespondence {
+            "CIM_BlockStatisticsService.GetStatisticsCollection(ElementTypes)",
+            "CIM_BlockStatisticsService.GetStatisticsCollection(ManifestCollection)",
+            "CIM_BlockStatisticsService.GetStatisticsCollection(StatisticsFormat)" }]
+        string Statistics[]);
+
+    [ Implemented(true) ] uint16 EnabledDefault;
+    [ Implemented(true) ] uint16 EnabledState;
+    [ Implemented(true) ] uint16 HealthState;
+    [ Implemented(true) ] uint16 OperationalStatus[];
+    [ Implemented(true) ] uint16 PrimaryStatus;
+    [ Implemented(true) ] string StartMode;
+    [ Implemented(true) ] boolean Started;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_BlockStatisticsCapabilities : CIM_BlockStatisticsCapabilities
+{
+    [ Implemented(true) ] uint16 ElementTypesSupported[];
+    [ Implemented(true) ] uint16 SynchronousMethodsSupported[];
+    [ Implemented(true) ] uint16 AsynchronousMethodsSupported[];
+    [ Implemented(true) ] uint64 ClockTickInterval;
+    [ Implemented(true) ] uint16 SupportedFeatures[];
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_BlockStorageStatisticsElementCapabilities : CIM_ElementCapabilities
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_BlockStatisticsManifest : CIM_BlockStatisticsManifest
+{
+    [ Implemented(true) ] uint16 ElementType;
+    [ Implemented(true) ] boolean IncludeStartStatisticTime = false;
+    [ Implemented(true) ] boolean IncludeStatisticTime = false;
+    [ Implemented(true) ] boolean IncludeTotalIOs = false;
+    [ Implemented(true) ] boolean IncludeKBytesTransferred = false;
+    [ Implemented(true) ] boolean IncludeIOTimeCounter = false;
+    [ Implemented(true) ] boolean IncludeReadIOs = false;
+    [ Implemented(true) ] boolean IncludeReadHitIOs = false;
+    [ Implemented(true) ] boolean IncludeReadIOTimeCounter = false;
+    [ Implemented(true) ] boolean IncludeReadHitIOTimeCounter = false;
+    [ Implemented(true) ] boolean IncludeKBytesRead = false;
+    [ Implemented(true) ] boolean IncludeWriteIOs = false;
+    [ Implemented(true) ] boolean IncludeWriteHitIOs = false;
+    [ Implemented(true) ] boolean IncludeWriteIOTimeCounter = false;
+    [ Implemented(true) ] boolean IncludeWriteHitIOTimeCounter = false;
+    [ Implemented(true) ] boolean IncludeKBytesWritten = false;
+    [ Implemented(true) ] boolean IncludeIdleTimeCounter = false;
+    [ Implemented(true) ] boolean IncludeMaintOp = false;
+    [ Implemented(true) ] boolean IncludeMaintTimeCounter = false;
+    [ Implemented(true) ] string CSVSequence[];
+};
+
+[ Version("0.5.1"), Experimental(true) ]
+class LMI_BlockStatisticsManifestCollection : CIM_BlockStatisticsManifestCollection
+{
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] boolean IsDefault;
+};
+
+[ Version("0.5.1"), Experimental(true), Association ]
+class LMI_MemberOfBlockStatisticsManifestCollection : CIM_MemberOfCollection
+{
+    [Key, Aggregate, Override("Collection"), Description (
+        "The Collection that aggregates members." )]
+    LMI_BlockStatisticsManifestCollection REF Collection;
+
+    [Key, Override("Member"), Description ( "The aggregated member of the Collection." )]
+    LMI_BlockStatisticsManifest REF Member;
+};
+
+[ Version("0.5.1"), Experimental, Association ]
+class LMI_AssociatedBlockStatisticsManifestCollection : CIM_AssociatedBlockStatisticsManifestCollection
+{
+    [Key, Override("Statistics"), Min ( 1 ),
+        Max ( 1 ),
+        Description (
+            "The collection of statistics filtered by the "
+            "BlockStatisticsManifestCollection." )]
+    LMI_StorageStatisticsCollection REF Statistics;
+
+    [Key, Override("ManifestCollection"), Description (
+        "The collection of Manifests applied to the StatisticsCollection."
+    )]
+   LMI_BlockStatisticsManifestCollection REF ManifestCollection;
+};

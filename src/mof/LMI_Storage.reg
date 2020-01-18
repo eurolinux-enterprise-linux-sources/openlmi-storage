@@ -1,0 +1,529 @@
+[LMI_StorageExtent]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDStorageExtent]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_DiskPartition]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_GenericDiskPartition]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVStorageExtent]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVStorageSetting]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVElementSettingData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_VGStoragePool]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_VGStorageSetting]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_VGElementSettingData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVStorageCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageConfigurationService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_VGStorageCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDStorageCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDStorageSetting]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDElementSettingData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+
+
+[LMI_DiskPartitionConfigurationSetting]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_DiskPartitionElementSettingData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+
+
+
+[LMI_DiskPartitionConfigurationService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_DiskPartitionConfigurationCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_DiskPartitionElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_DataFormat]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDFormat]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_PVFormat]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LocalFileSystem]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_ResidesOnExtent]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemSetting]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemElementSettingData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemConfigurationService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemConfigurationCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemConfigurationElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_PartitionBasedOn]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MDRAIDBasedOn]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVBasedOn]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LVAllocatedFromStoragePool]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_VGAssociatedComponentExtent]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_HostedStorageService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_SystemStorageDevice]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_InstalledPartitionTable]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageJob]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_OwningStorageJobElement]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_AffectedStorageJobElement]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageMethodResult]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_AssociatedStorageJobMethodResult]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageInstModification]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: indication
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageInstCreation]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: indication
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_HostedFileSystem]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountedFileSystem]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_HostedMount]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountedFileSystemSetting]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountConfigurationService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountedFileSystemCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountedFileSystemElementSettingData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MountPoint]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_AttachedFileSystem]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_TransientFileSystem]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_BlockStorageStatisticalData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageElementStatisticalData]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_StorageStatisticsCollection]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MemberOfStorageStatisticsCollection]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_HostedStorageStatisticsCollection]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_BlockStatisticsManifestCollection]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_BlockStatisticsManifest]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_MemberOfBlockStatisticsManifestCollection]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_AssociatedBlockStatisticsManifestCollection]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_BlockStatisticsService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_BlockStatisticsCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_BlockStorageStatisticsElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LUKSStorageExtent]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LUKSFormat]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_ExtentEncryptionConfigurationService]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_LUKSBasedOn]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage

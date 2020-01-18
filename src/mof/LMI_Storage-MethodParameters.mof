@@ -1,0 +1,258 @@
+/*
+ * These classes are used for CIM_ConcreteJob.JobOutParameters
+ * and LMI_InstMethodCall.MethodParameters, because
+ * Pegasus can't handle instances of unknown classes.
+ */
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteMDRAID
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteLV
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_ReturnToStoragePool
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteVG
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteStoragePool
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_LMI_DeletePartition
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteFileSystem
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteMount
+{
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyVG
+{
+    LMI_VGStoragePool REF Pool;
+    uint64 Size;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyLV
+{
+    LMI_LVStorageExtent REF TheElement;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyElementFromStoragePool
+{
+    uint64 Size;
+    CIM_LogicalElement REF TheElement;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyStoragePool
+{
+    uint64 Size;
+    CIM_StoragePool REF Pool;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyMDRAID
+{
+    LMI_MDRAIDStorageExtent REF TheElement;
+    uint64 Size;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyElementFromElements
+{
+    uint64 Size;
+    CIM_LogicalElement REF TheElement;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_LMI_CreateOrModifyPartition
+{
+    uint64 Size;
+    CIM_GenericDiskPartition REF Partition;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_LMI_CreateFileSystem
+{
+    CIM_FileSystem REF TheElement;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateMount
+{
+    LMI_MountedFileSystem REF Mount;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_ModifyMount
+{
+    LMI_MountedFileSystem REF Mount;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateEncryptionFormat
+{
+    LMI_EncryptionFormat REF Format;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_OpenEncryptionFormat
+{
+    CIM_StorageExtent REF Extent;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CloseEncryptionFormat
+{
+    LMI_EncryptionFormat REF Format;
+};
+
+
+
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteMDRAID_Result : __MethodParameters_DeleteMDRAID
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteLV_Result : __MethodParameters_DeleteLV
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_ReturnToStoragePool_Result : __MethodParameters_ReturnToStoragePool
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteVG_Result : __MethodParameters_DeleteVG
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteStoragePool_Result : __MethodParameters_DeleteStoragePool
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_LMI_DeletePartition_Result : __MethodParameters_LMI_DeletePartition
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteFileSystem_Result : __MethodParameters_DeleteFileSystem
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_DeleteMount_Result : __MethodParameters_DeleteMount
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyVG_Result : __MethodParameters_CreateOrModifyVG
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyLV_Result : __MethodParameters_CreateOrModifyLV
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyElementFromStoragePool_Result : __MethodParameters_CreateOrModifyElementFromStoragePool
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyStoragePool_Result : __MethodParameters_CreateOrModifyStoragePool
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyMDRAID_Result : __MethodParameters_CreateOrModifyMDRAID
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateOrModifyElementFromElements_Result : __MethodParameters_CreateOrModifyElementFromElements
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_LMI_CreateOrModifyPartition_Result : __MethodParameters_LMI_CreateOrModifyPartition
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_LMI_CreateFileSystem_Result : __MethodParameters_LMI_CreateFileSystem
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateMount_Result : __MethodParameters_CreateMount
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_ModifyMount_Result : __MethodParameters_ModifyMount
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CreateEncryptionFormat_Result : __MethodParameters_CreateEncryptionFormat
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_OpenEncryptionFormat_Result : __MethodParameters_OpenEncryptionFormat
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.5.3")]
+class __MethodParameters_CloseEncryptionFormat_Result : __MethodParameters_CloseEncryptionFormat
+{
+    uint32 __ReturnValue;
+};

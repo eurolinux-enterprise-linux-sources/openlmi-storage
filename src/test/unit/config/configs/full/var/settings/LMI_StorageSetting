@@ -1,0 +1,10 @@
+[LMI:StorageSetting:persistent1]
+first = 100
+second = two hundred
+third = 300.0
+
+[LMI:StorageSetting:persistent2]
+first = 1000
+second = two thousand
+third = 3000.0
+

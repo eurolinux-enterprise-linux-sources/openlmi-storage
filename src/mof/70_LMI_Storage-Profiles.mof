@@ -1,0 +1,80 @@
+instance of PG_ProviderProfileCapabilities
+{
+    CapabilityID = "LMI_Storage";
+    ProviderModuleName = "pycmpiLMI_Storage";
+    ProviderName = "/usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py";
+    RegisteredProfile = 0;
+    OtherRegisteredProfile = "OpenLMI-Storage";
+    OtherProfileOrganization = "OpenLMI";
+    ProfileVersion = "0.6.0";
+    RegisteredSubProfiles = {
+        0,
+        0,
+        0,
+        0,
+        0
+    };
+
+    OtherRegisteredSubProfiles = {
+        "Block Services",
+        "Extent Composition",
+        "File Storage",
+        "Job Control",
+        "Block Server Performance"
+    };
+
+    SubprofileVersions = {
+        "1.5",
+        "1.5",
+        "1.4",
+        "1.5",
+        "1.5"
+    };
+
+    OtherSubProfileOrganizations = {
+        "SNIA",
+        "SNIA",
+        "SNIA",
+        "SNIA",
+        "SNIA"
+    };
+    ConformingElements = {
+        "LMI_StorageExtent",
+        "LMI_MDRAIDStorageExtent",
+        "LMI_DiskPartition",
+        "LMI_GenericDiskPartition",
+        "LMI_LVStorageExtent",
+        "LMI_LVStorageSetting",
+        "LMI_VGStoragePool",
+        "LMI_VGStorageSetting",
+        "LMI_LVStorageCapabilities",
+        "LMI_StorageConfigurationService",
+        "LMI_VGStorageCapabilities",
+        "LMI_MDRAIDStorageCapabilities",
+        "LMI_MDRAIDStorageSetting",
+        "LMI_DiskPartitionConfigurationSetting",
+        "LMI_DiskPartitionConfigurationService",
+        "LMI_DiskPartitionConfigurationCapabilities",
+        "LMI_DataFormat",
+        "LMI_MDRAIDFormat",
+        "LMI_PVFormat",
+        "LMI_LocalFileSystem",
+        "LMI_FileSystemSetting",
+        "LMI_FileSystemConfigurationService",
+        "LMI_FileSystemConfigurationCapabilities",
+        "LMI_StorageJob",
+        "LMI_StorageMethodResult",
+        "LMI_MountedFileSystem",
+        "LMI_MountedFileSystemSetting",
+        "LMI_MountConfigurationService",
+        "LMI_MountedFileSystemCapabilities",
+        "LMI_MountPoint",
+        "LMI_TransientFileSystem",
+        "LMI_BlockStorageStatisticalData",
+        "LMI_StorageStatisticsCollection",
+        "LMI_BlockStatisticsManifestCollection",
+        "LMI_BlockStatisticsManifest",
+        "LMI_BlockStatisticsService",
+        "LMI_BlockStatisticsCapabilities"
+    };
+};

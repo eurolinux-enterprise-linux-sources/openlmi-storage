@@ -1,0 +1,106 @@
+New in version 0.7.0:
+* LUKS management - encrypted devices can be created, deleted, opened and
+  closed.
+* Lot of small bug fixes, documentation and test updates.
+
+New in version 0.6.0:
+* Updated logging to use the same infrastructure and options as OpenLMI-Software
+  provider. Note that /etc/openlmi/storage/storage.conf format changed a bit.
+* Added LMI_VGStoragePool.Name and LMI_StorageExtent.InstanceID properties
+  (applies also to all LMI classes inherited from CIM_StorageExtent).
+* Fixed some of bugs and improved test coverage and documentation.
+
+New in version 0.5.3:
+Fixed license of several source files.
+Added workaround for Open Pegasus to return Job output parameters
+in appropriate EmbeddedObjects.
+
+New in version 0.5.2:
+Adjust the spec file for SELinux.
+Rename openlmi python package to lmi
+Register LMI and SNIA profiles.
+And as usual, fixed lot of bugs, improved test coverage and documentation.
+
+New in version 0.5.1:
+Implemented mounting/unmounting.
+Implemented Block Server Performance Subprofile.
+Reorganized the sources to use fully qualified import names.
+Use Blivet instead of Anaconda as storage backend.
+Use CMPILogger from openlmi-providers for logging.
+All CreateOrModify* and Delete* methods are now asynchronous.
+Block devices can be formatted with ext2/3/4, xfs and btrfs filesystems.
+Indications are now supported for LMI_StorageJobs.
+And as usual, fixed lot of bugs, improved test coverage and documentation.
+
+New SMI-S profiles:
+  Jobs Storage Subprofile
+  File Storage Profile
+  Filesystem Profile
+  Filesystem Manipulation Profile
+  Block Server Performance Subprofile
+
+New classes:
+  LMI_AffectedStorageJobElement
+  LMI_AssociatedStorageJobMethodResult
+  LMI_DataFormat
+  LMI_FileSystemConfigurationCapabilities
+  LMI_FileSystemConfigurationElementCapabilities
+  LMI_FileSystemConfigurationService
+  LMI_FileSystemElementSettingData
+  LMI_FileSystemSetting
+  LMI_HostedFileSystem
+  LMI_LocalFileSystem
+  LMI_MDRAIDDataFormat
+  LMI_OwningStorageJobElement
+  LMI_PVDataFormat
+  LMI_ResidesOnExtent
+  LMI_StorageInstCreation
+  LMI_StorageInstModification
+  LMI_StorageJob
+  LMI_StorageJob
+  LMI_StorageMethodResult
+  LMI_MountedFileSystemSetting
+  LMI_MountedFileSystem
+  LMI_MountedFileSystemCapabilities
+  LMI_MountConfigurationService
+  LMI_HostedMount
+  LMI_MountedFileSystemElementSettingData
+  LMI_MountElementCapabilities
+  LMI_MountPoint:
+  LMI_AttachedFileSystem:
+  LMI_BlockStorageStatisticalData
+  LMI_StorageElementStatisticalData
+  LMI_StorageStatisticsCollection
+  LMI_MemberOfStorageStatisticsCollection
+  LMI_HostedStorageStatisticsCollection
+  LMI_BlockStatisticsService
+  LMI_BlockStatisticsCapabilities
+  LMI_BlockStorageStatisticsElementCapabilities
+  LMI_BlockStatisticsManifest
+  LMI_BlockStatisticsManifestCollection
+  LMI_MemberOfBlockStatisticsManifestCollection
+  LMI_AssociatedBlockStatisticsManifestCollection
+  LMI_TransientFileSystem
+
+
+New in version 0.5.0:
+New and backward-incompatible storage model.
+Check documentation for details.
+
+New in version 0.4:
+Rename Cura to OpenLMI.
+
+New in version 0.3:
+Rename the MOF file to match LMI prefix.
+providers: Fixed LMI_ResidesOnExtent class name.
+providers: Renamed LMI_HostedService to LMI_HostedStorageService and LMI_SystemDevice to LMI_SystemStorageDevice to avoid clashes with other LMI providers.
+
+New in version 0.2.1:
+Fixed ExtentStripeLengthDefault of RAID5 devices.
+Fixed partition creation with Anaconda 18.6.
+
+New in version 0.2:
+Use LMI_ prefix instead of Cura_.
+
+New in version 0.1.1:
+providers: Ported to Anaconda-18.6 in Fedora 18

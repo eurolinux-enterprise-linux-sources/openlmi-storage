@@ -1,0 +1,137 @@
+[ Version("0.6.0"), Experimental,
+  Description("This is generic class describing block devices "
+    "available on the system, i.e. in machine's /dev/ directory.")]
+class LMI_StorageExtent : CIM_StorageExtent
+{
+    [Implemented(true), Override, Description (
+          "A user-friendly name for the object. This property "
+          "allows each instance to define a user-friendly name in "
+          "addition to its key properties, identity data, and "
+          "description information. \n"
+          "Usually it is name of the device, i.e. 'sda' in case of /dev/sda "
+          "block device or 'myraid' in case of /dev/md/myraid or name of a "
+          "Logical Volume. "
+          "Subclasses may define it's own ElementName format." )]
+    string ElementName;
+
+    [Implemented(true), Description(
+          "All names, under which this device is known. "
+          "All these names are symlinks to one block device.")]
+    string Names[];
+
+    [ Implemented(true) ] string InstanceID;
+    [ Implemented(true) ] uint16 NameNamespace;
+    [ Implemented(true) ] uint16 NameFormat;
+    [ Implemented(true) ] string Name;
+    [ Implemented(true) ] uint16 ExtentStatus[];
+    [ Implemented(true) ] uint16 OperationalStatus[];
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] uint16 DataRedundancy;
+    [ Implemented(true) ] uint16 PackageRedundancy;
+    [ Implemented(true) ] uint64 ExtentStripeLength;
+    [ Implemented(true) ] boolean Primordial;
+    [ Implemented(true) ] string ExtentDiscriminator[];
+    [ Implemented(true) ] boolean IsComposite;
+    [ Implemented(true) ] uint64 BlockSize;
+    [ Implemented(true) ] uint64 NumberOfBlocks;
+    [ Implemented(true) ] uint64 ConsumableBlocks;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_ResidesOnExtent : CIM_ResidesOnExtent
+{
+};
+
+[ Version("0.5.1"), Experimental, Abstract, Description("Base class for all content formats.")]
+class LMI_DataFormat : CIM_EnabledLogicalElement
+{
+      [Key, Description (
+          "The scoping System\'s CreationClassName. Note that this "
+          "class was originally defined in the scope of a "
+          "ComputerSystem, and was later allowed to be scoped by "
+          "any System (for example, a computer or application "
+          "system). Unfortunately, the property name, "
+          "CSCreationClassName, could not be changed (for example, "
+          "to SystemCreationClass Name) without deprecating the "
+          "class. This change was not deemed critical to the "
+          "semantics and therefore did not merit deprecation. So, "
+          "the property name remains." ),
+       MaxLen ( 256 ),
+       Propagated ( "CIM_System.CreationClassName" )]
+   string CSCreationClassName;
+
+      [Key, Description (
+          "The scoping System\'s Name. Note that this class was "
+          "originally defined in the scope of a ComputerSystem, and "
+          "was later allowed to be scoped by any System (for "
+          "example, a computer or application system). "
+          "Unfortunately, the property name, CSName, could not be "
+          "changed (for example, to SystemName) without deprecating "
+          "the class. This change was not deemed critical to the "
+          "semantics and therefore did not merit deprecation. So, "
+          "the property name remains." ),
+       MaxLen ( 256 ),
+       Propagated ( "CIM_System.Name" )]
+   string CSName;
+
+      [Key, Description (
+          "CreationClassName indicates the name of the class or the "
+          "subclass used in the creation of an instance. When used "
+          "with the other key properties of this class, this "
+          "property allows all instances of this class and its "
+          "subclasses to be uniquely identified." ),
+       MaxLen ( 256 )]
+   string CreationClassName;
+
+      [Key, Override ( "Name" ),
+       Description (
+          "The inherited Name serves as key of a FileSystem "
+          "instance within a ComputerSystem." ),
+       MaxLen ( 256 )]
+   string Name;
+
+   [ Description("Type of the data format."),
+     ValueMap{"1", "2", "3", "4", "5", "6", "7", "8", "65535"},
+     Values{"Swap",
+        "MD RAID member",
+        "Physical Volume",
+        "LUKS",
+        "BIOS Boot",
+        "DM RAID member",
+        "Multipath member",
+        "PPC PReP Boot",
+        "Other"}]
+   uint16 FormatType;
+   [ Description("Textual description of the data format.")]
+   string FormatTypeDescription;
+};
+
+
+// Special comments to generate pictures with following classes.
+//
+//class CIM_StorageConfigurationService : CIM_Service
+//class CIM_DiskPartitionConfigurationService : CIM_Service
+//
+//class CIM_StorageSetting : CIM_SettingData
+//
+//class CIM_FileSystemCapabilities : CIM_Capabilities
+//class CIM_FileSystemSetting : CIM_SettingData
+//class CIM_GenericDiskPartition : CIM_MediaPartition
+//class CIM_MediaPartition : CIM_StorageExtent
+//class CIM_DiskPartition : CIM_GenericDiskPartition
+//
+//class CIM_StorageCapabilities : CIM_Capabilities
+//class CIM_DiskPartitionConfigurationCapabilities : CIM_Capabilities
+
+
+/*
+ * LMI return codes:
+ *
+ * 0 - Success
+ * 1 - Not Supported
+ * 2 - Unknown
+ * 3 - Timeout
+ * 4 - Failed
+ * 100 - Not Enough Space
+ * 101 - In Use (e.g. 'cannot delete partition, it's used' or 'cannot create partition table, there are partitions there')
+ */

@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: openlmi-storage
+Version: 0.7.0
+Summary: Anaconda Storage Provider
+Home-page: https://fedorahosted.org/openlmi/
+Author: Jan Safranek
+Author-email: jsafrane@redhat.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Topic :: System :: Systems Administration

@@ -1,0 +1,409 @@
+[Version("0.5.1"), Experimental, Description (
+       "DiskPartitionConfigurationService provides methods for clients "
+       "to configure DiskPartitions. "
+       "\n"
+       "Any CIM_StorageExtent can be partitioned, but it's strongly "
+       "recommended to partition only disks."
+       "\n Several partition styles are supported, see "
+       "LMI_DiskPartitionConfigurationCapabilities instances. "
+       "GPT partition style is strongly recommended. While MS-DOS (MBR) "
+       "style partitions are fully supported, creation and modification of "
+       "logical partitions require non-trivial calculations and should be "
+       "avoided unless the application really knows what it is doing."
+        )]
+class LMI_DiskPartitionConfigurationService : CIM_DiskPartitionConfigurationService {
+      [Implemented(true), Description (
+          "Describes the partitioning schemes supported by the "
+          "platform. AIX and HP_UX do not allow partitions. Linux "
+          "allows volumes with and without partitions, Solaris "
+          "requires Partitions. No more than a single instance of "
+          "this class MAY be instantiated on a system. If set to "
+          "\'No partitions allowed\' then the methods of this "
+          "service are not available." ),
+       ValueMap { "2", "3", "4" },
+       Values { "No partitions allowed",
+          "Volumes may be partitioned or treated as whole",
+          "Volumes must be partitioned" }]
+   uint16 PartitioningSchemes;
+
+      [Implemented(true), Description (
+          "This method installs a partition table on an extent of "
+          "the specified partition style; creating an association "
+          "between the extent and that capabilities instances "
+          "referenced as method parameters. As a side effect, the "
+          "consumable block size of the underlying extent is "
+          "reduced by the block size of the metadata reserved by "
+          "the partition table and associated metadata. This size "
+          "is in the PartitionTableSize property of the associated "
+          "DiskPartitionConfigurationCapabilities instance." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "..", "0x1000",
+          "0x1001", "0x1002", "..", "0x8000.." },
+       Values { "Success", "Not Supported", "Unknown", "Timeout",
+          "Failed", "Invalid Parameter", "DMTF Reserved",
+          "Extent already has partition table",
+          "Requested Extent too large",
+          "Style not supported by Service", "Method Reserved",
+          "Vendor Specific" }]
+   uint32 SetPartitionStyle(
+         [IN, Description (
+             "A reference to the extent (volume or partition) "
+             "where this style (partition table) will be "
+             "installed." )]
+      CIM_StorageExtent REF Extent,
+
+         [IN, Description (
+             "A reference to the "
+             "DiskPartitionConfigurationCapabilities instance "
+             "describing the desired partition style." )]
+      CIM_DiskPartitionConfigurationCapabilities REF PartitionStyle);
+
+
+      [Override, Implemented(false),Description (
+          "This method creates a new partition if the Partition "
+          "parameter is null or modifies the partition specified. "
+          "If the starting and ending address parameters are null, "
+          "the resulting partition will occupy the entire "
+          "underlying extent. If the starting address is non-null "
+          "and the ending address is null, the resulting partition "
+          "will extend to the end of the underlying extent. \n"
+          "\n"
+          "In contradiction to SMI-S, no LogicalDisk will be created "
+          "on the partition."
+          "\n"
+          "This methods is only for compatibility with SMI-S."
+          "Applications should use LMI_CreateOrModifyPartition instead."
+          "\n"
+          "If logical partition is being created, it's start/end sector "
+          "must include space for partition metadata and any alignment "
+          "sectors. ConsumableSpace of the logical partition will be "
+          "reduced by these metadata and alignment sectors."
+          "\n"
+          "The underlying extent MUST be associated to a "
+          "capabilities class describing the installed partition "
+          "style (partition table); this association is established "
+          "using SetPartitionStyle()." ),
+       ValueMap { "0", "1", "2", "3", "4", "5", "..", "0x1000",
+          "0x1001", "0x1002", "0x1003", "0x1004", "..", "0x8000.." },
+       Values { "Success", "Not Supported", "Unknown", "Timeout",
+          "Failed", "Invalid Parameter", "DMTF Reserved",
+          "Overlap Not Supported", "No Available Partitions",
+          "Specified partition not on specified extent",
+          "Device File Name not valid",
+          "LogicalDisk with different DeviceFileName exists",
+          "Method Reserved", "Vendor Specific" }]
+   uint32 CreateOrModifyPartition(
+         [IN, Description (
+             "A reference to the underlying extent the partition is base on."
+              )]
+      CIM_StorageExtent REF extent,
+
+         [IN, Description ( "The starting block number. "
+            "If null when creating a partition, the first block is used."
+            "If null when modifying a partition, the partition start "
+            "won't be chnaged." )]
+      uint64 StartingAddress,
+
+         [IN, Description ( "The ending block number. "
+            "If null when creating a partition, the last block of the device "
+            "will be used. If null when modifying a partition, the partition "
+            "end won't be chnaged." )]
+      uint64 EndingAddress,
+
+         [IN, Description (
+             "The platform-specific special file name to be "
+             "assigned to the LogicalDisk instance BasedOn the "
+             "new DiskPartition instance." )]
+      string DeviceFileName,
+
+         [IN, OUT, Description (
+             "A reference an existing partition instance to "
+             "modify or null to request a new partition." )]
+      CIM_GenericDiskPartition REF Partition
+    );
+
+   [Implemented(true), Description("Create new partition on given extent."
+        "Partition modification is not yet supported."
+        "The implementation will select the best space to fit the partition, "
+        "with all alignment rules etc. "
+        "\n"
+        "If no Size parameter is provided, the largest possible partition "
+        "is created."
+        "\n"
+        "The Goal parameter is not supported for now, the behavior below "
+        "applies."
+        "\n"
+        "If no Goal is provided and GPT partition is requested, "
+        "normal partition is created. "
+        "If no Goal is provided and MS-DOS partition is requested "
+        "and there is extended partition already on the device, "
+        "a logical partition is created. If there is no extended partition "
+        "on the device and there are at most two primary partitions on the "
+        "device, primary partition is created. "
+        "If there is no extended partition and three primary partitions "
+        "already exist, new extended partition with all remaining space is "
+        "created and a logical partition with requested size is created."),
+   ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+       "4097", "4098..32767", "32768..65535" },
+   Values { "Job Completed with No Error", "Not Supported",
+      "Unknown", "Timeout", "Failed", "Invalid Parameter",
+      "In Use", "DMTF Reserved",
+      "Method Parameters Checked - Job Started",
+      "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+   uint32 LMI_CreateOrModifyPartition(
+         [IN, Description (
+             "A reference to the underlying extent the partition is base on."
+              )]
+      CIM_StorageExtent REF extent,
+
+         [IN, OUT, Description ( "Requested size of the partition to create. "
+            "If null when creating a partition, the larges possible "
+            "partition is created."
+            "On output, the achieved size is returned."),
+            Units("Bytes")]
+      uint64 Size,
+
+         [IN, OUT, Description (
+             "A reference an existing partition instance to "
+             "modify or null to request a new partition." )]
+      CIM_GenericDiskPartition REF Partition,
+
+      [IN, Description("Setting to be applied to created/modified partition.")]
+      LMI_DiskPartitionConfigurationSetting REF Goal,
+
+      [IN(false), OUT, Description (
+            "A reference to started job (may be null if job is completed).")]
+      CIM_ConcreteJob REF Job
+   );
+
+   [Implemented(true), Description("Delete partition."),
+   ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
+       "4097", "4098..32767", "32768..65535" },
+   Values { "Job Completed with No Error", "Not Supported",
+      "Unknown", "Timeout", "Failed", "Invalid Parameter",
+      "In Use", "DMTF Reserved",
+      "Method Parameters Checked - Job Started",
+      "Size Not Supported", "Method Reserved", "Vendor Specific" }]
+   uint32 LMI_DeletePartition(
+         [IN, Description (
+             "A reference an existing partition instance to "
+             "delete." )]
+      CIM_GenericDiskPartition REF Partition,
+
+      [IN(false), OUT, Description (
+            "A reference to started job (may be null if job is completed).")]
+      CIM_ConcreteJob REF Job
+  );
+};
+
+   [Version("0.5.1"), Experimental, Description (
+       "DiskPartitionConfigurationCapabilities instances describe a "
+       "partition style supported by the platform. An instance of this "
+       "class is associated with a volume (or partition) when a "
+       "partition table is installed (see "
+       "DiskPartitionConfigurationService.SetPartitionStyle." )]
+class LMI_DiskPartitionConfigurationCapabilities : CIM_DiskPartitionConfigurationCapabilities {
+
+      [Implemented(true), Override, Description (
+          "The partition style (i.e partition table type) "
+          "associated with this capabilities instance. "
+          "\n"
+          "LMI introduces additional partition styles." ),
+       ValueMap { "2", "3", "4", "4097", "4098", "4099", "4100" },
+       Values { "MBR", "GPT", "VTOC", "PC98", "SUN", "MAC", "EMBR" }]
+   uint16 PartitionStyle;
+      [Override, Description (
+          "Some partitions can act as a container for other "
+          "partitions. If sub partitions are not supported, this "
+          "should be set to NULL." ),
+       ValueMap { "1", "2", "3", "4", "4100" },
+       Values { "Other", "MBR", "VTOC", "GPT", "EMBR" },
+       ArrayType ( "Indexed" )]
+   uint16 ValidSubPartitionStyles[];
+
+   [Implemented(true), Description(
+        "List of supported properties in LMI_DiskPartitionConfigurationSetting. "
+        "Different partition tables support different properties."),
+        ValueMap{ "1", "2", "3" },
+        Values{"Partition Type", "Bootable", "Hidden"}]
+   uint16 SupportedSettings[];
+
+   [Implemented(true),
+        Description("Create LMI_DiskPartitionConfigurationSetting applicable to this "
+        "partition table. All properties its will have default values."),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 CreateSetting(
+        [IN(False), OUT, Description("Created setting.")]
+        LMI_DiskPartitionConfigurationSetting REF Setting
+    );
+
+    [Implemented(true),
+        Description("Return allignment unit for given StorageExtent (in blocks). "
+        "New partitions and metadata sectors should be aligned to this "
+        "unit."), Units("Blocks"),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 GetAlignment(
+        [IN, Description("The StorageExtent to get alignment for.")]
+        CIM_StorageExtent REF Extent,
+
+        [IN(False), OUT, Description("Suggested alignment, in nr. of blocks.")]
+        uint64 Alignment
+    );
+
+    [Implemented(true),
+        Description("This method finds the best place for partition of given size."),
+        ValueMap { "0", "1", "4", "100" },
+        Values { "Success", "Not Supported", "Failed", "Not Enough Free Space"}]
+    uint32 FindPartitionLocation(
+        [IN, Description("The StorageExtent, on which the partition should be created.")]
+        CIM_StorageExtent REF Extent,
+
+        [IN, OUT, Description("On input, the requested size of the partition. "
+            "On output, the achieeved size. It can be rounded to nearest block "
+            "size or due to alignment."
+            "\n"
+            "If null, location of the largest possible partition will be returned."),
+            Units("Bytes")]
+        uint64 Size,
+
+        [IN(False), OUT, Description("Suggested starting block number of the partition. "
+            "It already includes any metadata and alignment sectors.")]
+        uint64 StartingAddress,
+
+        [IN(False), OUT, Description("Suggested ending block number of the partition. ")]
+        uint64 EndingAddress
+    );
+
+    [Implemented(true)] string InstanceID;
+    [Implemented(true)] string Caption;
+    [Implemented(true)] string ElementName;
+    [Implemented(true)] uint64 MaxCapacity;
+    [Implemented(true)] uint16 MaxNumberOfPartitions;
+    [Implemented(true)] boolean OverlapAllowed;
+    [Implemented(true)] uint32 PartitionTableSize;
+    [Implemented(true)] uint16 SupportedSynchronousActions[];
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_DiskPartitionConfigurationSetting : CIM_SettingData
+{
+    [Description("Bootable flag of the partition. It should be enabled if "
+        "you want to boot off the partition.  The semantics vary between partition tables. "
+        "For MS-DOS (MBR) partition table, only one partition can be bootable. "
+        "If you are installing LILO on a partition that partition must "
+        "be bootable.  For PC98 partition table, all ext2 partitions must "
+        "be bootable (this is enforced by this API).")]
+    boolean Bootable = False;
+
+    [Description("Flag can be enabled to hide partitions "
+          "from Microsoft operating systems.")]
+    boolean Hidden;
+
+    [Description("Partition type of the partition which is going to be created/modified. "
+        "It should be used only for MS-DOS (MBR/EMBR) partition tables."),
+       ValueMap { "0", "1", "2", "3" },
+       Values { "Unknown", "Primary", "Extended", "Logical" }]
+    uint16 PartitionType;
+
+    [ Description("Create a copy of this instance. The resulting instance "
+        "will have the same class and the same properties as the original "
+        "instance except ChangeableType, which will be set to "
+        "\"Changeable - Transient\" in the clone, and InstanceID."),
+        ValueMap { "0", "1", "4" },
+        Values { "Success", "Not Supported", "Failed"}]
+    uint32 CloneSetting(
+        [ IN(False), OUT, Description("Created copy.")]
+        CIM_StorageSetting REF Clone
+    );
+};
+
+[Version("0.6.0"), Experimental, Description("This class represents primary, extended and logical partitions on "
+    "devices with MS-DOS (MBR) style partition tables.")]
+class LMI_DiskPartition : CIM_DiskPartition
+{
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] uint16 NameNamespace;
+    [ Implemented(true) ] uint16 NameFormat;
+    [ Implemented(true) ] string Name;
+    [ Implemented(true) ] uint16 ExtentStatus[];
+    [ Implemented(true) ] uint16 OperationalStatus[];
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] uint16 DataRedundancy;
+    [ Implemented(true) ] uint16 PackageRedundancy;
+    [ Implemented(true) ] uint64 ExtentStripeLength;
+    [ Implemented(true) ] boolean Primordial;
+    [ Implemented(true) ] string ExtentDiscriminator[];
+    [ Implemented(true) ] uint64 BlockSize;
+    [ Implemented(true) ] uint64 NumberOfBlocks;
+    [ Implemented(true) ] uint64 ConsumableBlocks;
+
+    [ Implemented(true) ] boolean PrimaryPartition;
+    [ Implemented(true) ] uint16 PartitionType;
+    [Implemented(true)] string InstanceID;
+    [Implemented(true), Description(
+          "All names, under which this device is known. "
+          "All these names are symlinks to one block device.")]
+    string Names[];
+};
+
+[Version("0.6.0"), Experimental, Description("This class represents partitions on "
+    "devices with other than MBR partition tables.")]
+class LMI_GenericDiskPartition : CIM_GenericDiskPartition
+{
+    [ Implemented(true) ] string ElementName;
+    [ Implemented(true) ] uint16 NameNamespace;
+    [ Implemented(true) ] uint16 NameFormat;
+    [ Implemented(true) ] string Name;
+    [ Implemented(true) ] uint16 ExtentStatus[];
+    [ Implemented(true) ] uint16 OperationalStatus[];
+    [ Implemented(true) ] boolean NoSinglePointOfFailure;
+    [ Implemented(true) ] uint16 DataRedundancy;
+    [ Implemented(true) ] uint16 PackageRedundancy;
+    [ Implemented(true) ] uint64 ExtentStripeLength;
+    [ Implemented(true) ] boolean Primordial;
+    [ Implemented(true) ] string ExtentDiscriminator[];
+    [ Implemented(true) ] uint64 BlockSize;
+    [ Implemented(true) ] uint64 NumberOfBlocks;
+    [ Implemented(true) ] uint64 ConsumableBlocks;
+
+    [Implemented(true)] string InstanceID;
+    [Implemented(true), Description(
+          "All names, under which this device is known. "
+          "All these names are symlinks to one block device.")]
+    string Names[];
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_InstalledPartitionTable : CIM_InstalledPartitionTable
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_PartitionBasedOn : CIM_BasedOn
+{
+    [ Implemented(true) ] uint64 StartingAddress;
+    [ Implemented(true) ] uint64 EndingAddress;
+    [ Implemented(true) ] uint16 OrderIndex;
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_DiskPartitionElementCapabilities : CIM_ElementCapabilities
+{
+};
+
+[ Version("0.5.1"), Experimental ]
+class LMI_DiskPartitionElementSettingData : CIM_ElementSettingData
+{
+    [Implemented(true)] uint16 IsCurrent;
+};
+
+/*
+ Special comment for openlmi-doc-mof2rst to generate documentation of following
+ classes:
+
+class CIM_GPTDiskPartition
+class CIM_LogicalDisk
+class CIM_VTOCDiskPartition
+
+*/

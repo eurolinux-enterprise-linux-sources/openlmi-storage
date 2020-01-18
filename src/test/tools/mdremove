@@ -1,0 +1,20 @@
+#!/bin/bash
+
+RAID=$1
+
+echo Destroying RAID $1
+
+# get list of base devices
+DEVICES=`mdadm -D --brief --verbose $RAID | grep " devices" | sed -e 's!^[^/]*/!/!' -e 's/,/ /g'`
+
+# stop the array
+mdadm -S $RAID
+
+for D in $DEVICES; do
+    # remove the device
+    mdadm $RAID -r $D
+    # destroy any metadata
+    dd if=/dev/zero of=$D count=1K
+done
+
+:

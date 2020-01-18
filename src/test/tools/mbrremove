@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DISK=$1
+
+echo "$LMI_STORAGE_DISK" | grep $DISK > /dev/null
+if [ "$?" != "0" ]; then
+    echo "Skipping cleanup of disk $DISK!!!"
+    exit 0
+fi
+
+# remove any GPT table copies
+dd if=/dev/zero of=$DISK count=1K
+parted $DISK mklabel msdos
+
+# remove MBR
+dd if=/dev/zero of=$DISK count=1K
+partprobe

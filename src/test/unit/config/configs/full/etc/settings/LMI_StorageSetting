@@ -1,0 +1,9 @@
+[LMI:StorageSetting:preconfigured1]
+first = 1
+second = two
+third = 3.0
+
+[LMI:StorageSetting:preconfigured2]
+first = 11
+second = twelve
+third = 13.0
