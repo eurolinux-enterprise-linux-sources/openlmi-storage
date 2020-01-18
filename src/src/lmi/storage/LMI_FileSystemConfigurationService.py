@@ -34,6 +34,7 @@ from lmi.storage.ServiceProvider import ServiceProvider
 import pywbem
 import lmi.providers.cmpi_logging as cmpi_logging
 from lmi.storage.util import storage
+LOG = cmpi_logging.get_logger(__name__)
 
 class LMI_FileSystemConfigurationService(ServiceProvider):
     """
@@ -59,9 +60,9 @@ class LMI_FileSystemConfigurationService(ServiceProvider):
         returned, a ConcreteJob will be started to create the element. A
         Reference to the ConcreteJob will be returned in the output
         parameter Job. If any other value is returned, the job will not be
-        started, and no action will be taken. \nThe parameter TheElement
+        started, and no action will be taken.\nThe parameter TheElement
         will contain a Reference to the FileSystem if this operation
-        completed successfully. \nThe StorageExtents to use is specified
+        completed successfully.\nThe StorageExtents to use is specified
         by the InExtents parameter.\nThe desired settings for the
         FileSystem are specified by the Goal parameter. Goal is an element
         of class CIM_FileSystemSetting, or a derived class. Unlike CIM
@@ -253,7 +254,7 @@ class LMI_FileSystemConfigurationService(ServiceProvider):
         devices = []
         # convert strings back to devices
         for devname in device_strings:
-            device = self.storage.devicetree.getDeviceByPath(devname)
+            device = storage.getRealDeviceByPath(self.storage, devname)
             if not device:
                 raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                         "One of the devices disappeared: " + devname)
@@ -271,20 +272,28 @@ class LMI_FileSystemConfigurationService(ServiceProvider):
             action = blivet.ActionCreateDevice(volume)
         else:
             # create simple CreateFormat action
-            action = blivet.ActionCreateFormat(devices[0],
-                    format=fmt)
+            action = blivet.ActionCreateFormat(devices[0], fmt)
 
         lmi.storage.util.storage.do_storage_action(
                 self.storage, [action])
 
         # We must locate the format manually, the storage was reset
         # TODO: remove when reset() is not necessary
-        device = self.storage.devicetree.getDeviceByPath(devices[0].path)
+        device = self.storage.devicetree.getDeviceByName(devices[0].name)
         if device:
             fmt = device.format
         else:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                     "Cannot locate new format, was it removed?")
+
+        if isinstance(fmt, blivet.formats.fs.BTRFS):
+            # we need the BTRFSVolumeDevice
+            children = self.storage.devicetree.getChildren(device)
+            if len(children) != 1:
+                raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
+                        "Failed to find btrfs volume device on %s: %s"
+                        % (str(device), str(children)))
+            device = children[0]
 
         fmtprovider = self.provider_manager.get_provider_for_format(
                 device, fmt)

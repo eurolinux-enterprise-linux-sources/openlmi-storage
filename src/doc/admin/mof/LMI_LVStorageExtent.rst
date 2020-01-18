@@ -35,6 +35,11 @@ Local properties
     UUID of the Logical Volume.
 
     
+.. _LMI-LVStorageExtent-ThinlyProvisioned:
+
+``boolean`` **ThinlyProvisioned**
+
+    
 
 Local methods
 ^^^^^^^^^^^^^
@@ -50,7 +55,7 @@ Inherited properties
 | ``boolean`` :ref:`IsBasedOnUnderlyingRedundancy <CIM-StorageExtent-IsBasedOnUnderlyingRedundancy>`
 | ``string[]`` :ref:`StatusDescriptions <CIM-ManagedSystemElement-StatusDescriptions>`
 | ``string`` :ref:`InstanceID <LMI-StorageExtent-InstanceID>`
-| ``uint16[]`` :ref:`ClientSettableUsage <CIM-StorageExtent-ClientSettableUsage>`
+| ``uint64`` :ref:`ExtentStripeLength <LMI-StorageExtent-ExtentStripeLength>`
 | ``boolean`` :ref:`IsCompressed <CIM-StorageExtent-IsCompressed>`
 | ``uint16`` :ref:`DataOrganization <CIM-StorageExtent-DataOrganization>`
 | ``uint16`` :ref:`Access <CIM-StorageExtent-Access>`
@@ -64,6 +69,7 @@ Inherited properties
 | ``datetime`` :ref:`TimeOfLastStateChange <CIM-EnabledLogicalElement-TimeOfLastStateChange>`
 | ``uint64`` :ref:`PowerOnHours <CIM-LogicalDevice-PowerOnHours>`
 | ``string`` :ref:`Status <CIM-ManagedSystemElement-Status>`
+| ``string`` :ref:`DeviceBusType <LMI-StorageExtent-DeviceBusType>`
 | ``uint64`` :ref:`Generation <CIM-ManagedElement-Generation>`
 | ``datetime`` :ref:`InstallDate <CIM-ManagedSystemElement-InstallDate>`
 | ``string`` :ref:`OtherNameNamespace <CIM-StorageExtent-OtherNameNamespace>`
@@ -76,7 +82,7 @@ Inherited properties
 | ``boolean`` :ref:`PowerManagementSupported <CIM-LogicalDevice-PowerManagementSupported>`
 | ``boolean`` :ref:`IsConcatenated <CIM-StorageExtent-IsConcatenated>`
 | ``string`` :ref:`Purpose <CIM-StorageExtent-Purpose>`
-| ``uint64`` :ref:`ExtentStripeLength <LMI-StorageExtent-ExtentStripeLength>`
+| ``uint16[]`` :ref:`ClientSettableUsage <CIM-StorageExtent-ClientSettableUsage>`
 | ``uint16`` :ref:`OperatingStatus <CIM-ManagedSystemElement-OperatingStatus>`
 | ``uint16`` :ref:`LocationIndicator <CIM-LogicalDevice-LocationIndicator>`
 | ``uint16`` :ref:`CompressionState <CIM-StorageExtent-CompressionState>`

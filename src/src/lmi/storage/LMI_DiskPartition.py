@@ -67,7 +67,7 @@ class LMI_DiskPartition(ExtentProvider):
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                     'Cannot find extended partition for device: ' + device.path)
 
-        ext = self.storage.devicetree.getDeviceByPath(parted_ext.path)
+        ext = storage.getRealDeviceByPath(self.storage, parted_ext.path)
         return [ext, ]
 
 

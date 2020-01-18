@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2013-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Synacek <jsynacek@redhat.com>
+#          Jan Safranek <jsafrane@redhat.com>
 # -*- coding: utf-8 -*-
 """ Module for MountingProvider class. """
 
@@ -22,6 +23,7 @@ import pywbem
 import blivet
 from lmi.storage.BaseProvider import BaseProvider
 import lmi.providers.cmpi_logging as cmpi_logging
+from lmi.storage.util import storage
 
 class MountingProvider(BaseProvider):
     """
@@ -53,7 +55,7 @@ class MountingProvider(BaseProvider):
         if isinstance(device, blivet.devices.NoDevice):
             paths = [device.format.mountpoint]
         else:
-            paths = blivet.util.get_mount_paths(device.path)
+            paths = storage.get_mount_paths(device)
 
         if device is None or not paths:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "No such mounted device: " + spec)

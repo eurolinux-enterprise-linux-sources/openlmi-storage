@@ -336,7 +336,11 @@ class LMI_MountConfigurationService(ServiceProvider, MountingProvider):
             argv.append("-o")
             argv.append(options)
 
-        return subprocess.call(argv)
+        ret = subprocess.call(argv)
+        if ret == 0:
+            # fs mounted, refresh blivet structures
+            storage_reset(self.storage)
+        return ret
 
     @cmpi_logging.trace_method
     def cim_method_deletemount(self, env, object_name,
@@ -434,6 +438,8 @@ class LMI_MountConfigurationService(ServiceProvider, MountingProvider):
         if mode == self.MountMethod.Mode.Mode_4 or \
            mode == self.MountMethod.Mode.Mode_32769:
             rc = blivet.util.umount(mountpoint)
+            # reload blivet mount list
+            storage_reset(self.storage)
 
             rval = self.MountMethod.Job_Completed_with_No_Error
             state = Job.STATE_FINISHED_OK
@@ -558,10 +564,10 @@ class LMI_MountConfigurationService(ServiceProvider, MountingProvider):
         self.job_manager.add_job(job)
 
         rval = self.RequestStateChange.Method_Parameters_Checked___Job_Started
-        outparams.append(pywbem.CIMParameter(
+        outparams = [(pywbem.CIMParameter(
                 name='Job',
                 type='reference',
-                value=job.get_name()))
+                value=job.get_name()))]
         return (rval, outparams)
 
     @cmpi_logging.trace_method

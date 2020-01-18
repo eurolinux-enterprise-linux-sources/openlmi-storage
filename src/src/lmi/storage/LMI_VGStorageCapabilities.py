@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Module for LMI_VGStorageCapabilities class.
@@ -50,19 +51,26 @@ class LMI_VGStorageCapabilities(CapabilitiesProvider):
 
         self.instances = [
             {
-                    'InstanceID': LMI_VGStorageCapabilities.INSTANCE_ID,
-                    'ElementName': LMI_VGStorageCapabilities.INSTANCE_ID,
-                    'DataRedundancyDefault': pywbem.Uint16(1),
-                    'DataRedundancyMax': pywbem.Uint16(units.MAXINT16),
-                    'DataRedundancyMin': pywbem.Uint16(1),
-                    'NoSinglePointOfFailure': True,
-                    'NoSinglePointOfFailureDefault': False,
-                    'ExtentStripeLengthDefault': pywbem.Uint16(1),
-                    'PackageRedundancyDefault': pywbem.Uint16(0),
-                    'PackageRedundancyMax': pywbem.Uint16(units.MAXINT16),
-                    'PackageRedundancyMin': pywbem.Uint16(0),
-                    'ExtentSizeDefault': pywbem.Uint64(DEFAULT_EXTENT_SIZE),
-                    'ParityLayoutDefault':  pywbem.Uint16(0)
+                'InstanceID': LMI_VGStorageCapabilities.INSTANCE_ID,
+                'ElementName': LMI_VGStorageCapabilities.INSTANCE_ID,
+                'DataRedundancyDefault': pywbem.Uint16(1),
+                'DataRedundancyMax': pywbem.Uint16(units.MAXINT16),
+                'DataRedundancyMin': pywbem.Uint16(1),
+                'NoSinglePointOfFailure': True,
+                'NoSinglePointOfFailureDefault': False,
+                'ExtentStripeLengthDefault': pywbem.Uint16(1),
+                'PackageRedundancyDefault': pywbem.Uint16(0),
+                'PackageRedundancyMax': pywbem.Uint16(units.MAXINT16),
+                'PackageRedundancyMin': pywbem.Uint16(0),
+                'ExtentSizeDefault': pywbem.Uint64(DEFAULT_EXTENT_SIZE),
+                'ParityLayoutDefault':  pywbem.Uint16(0),
+                # on a global scale, there is a support for thin pools (limitless)
+                # and thin logical volumes (storage extent)
+                'SupportedStorageElementTypes':
+                    [self.Values.SupportedStorageElementTypes.ThinlyProvisionedLimitlessStoragePool,
+                     self.Values.SupportedStorageElementTypes.ThinlyProvisionedStorageExtent],
+                'ThinProvisionedClientSettableReserve': pywbem.Uint64(0),
+                'ThinProvisionedDefaultReserve': pywbem.Uint64(0),
             },
     ]
 
@@ -302,3 +310,11 @@ class LMI_VGStorageCapabilities(CapabilitiesProvider):
         class ParityLayoutDefault(object):
             Non_Rotated_Parity = pywbem.Uint16(2)
             Rotated_Parity = pywbem.Uint16(3)
+
+        class SupportedStorageElementTypes(object):
+            ThinlyProvisionedStorageVolume = pywbem.Uint16(5)
+            ThinlyProvisionedLogicalDisk = pywbem.Uint16(6)
+            ThinlyProvisionedAllocatedStoragePool = pywbem.Uint16(7)
+            ThinlyProvisionedQuotaStoragePool = pywbem.Uint16(8)
+            ThinlyProvisionedLimitlessStoragePool = pywbem.Uint16(9)
+            ThinlyProvisionedStorageExtent = pywbem.Uint16(32768)

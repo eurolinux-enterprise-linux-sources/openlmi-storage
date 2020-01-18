@@ -31,20 +31,23 @@ Inheritance tree
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_PartitionBasedOn <LMI-PartitionBasedOn>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LVBasedOn <LMI-LVBasedOn>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSBasedOn <LMI-LUKSBasedOn>`
+|    \|--- \* :ref:`CIM_MediaPresent <CIM-MediaPresent>`
+|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_MediaPresent <LMI-MediaPresent>`
 |    \|--- \* :ref:`LMI_MountPoint <LMI-MountPoint>`
 |    \|--- \* :ref:`CIM_AbstractElementAllocatedFromPool <CIM-AbstractElementAllocatedFromPool>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_ElementAllocatedFromPool <CIM-ElementAllocatedFromPool>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_AllocatedFromStoragePool <CIM-AllocatedFromStoragePool>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LVAllocatedFromStoragePool <LMI-LVAllocatedFromStoragePool>`
+|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_VGAllocatedFromStoragePool <LMI-VGAllocatedFromStoragePool>`
+|    \|--- \* :ref:`LMI_AttachedFileSystem <LMI-AttachedFileSystem>`
+|    \|--- \* :ref:`LMI_HostedMount <LMI-HostedMount>`
+|    \|--- \* :ref:`CIM_ResidesOnExtent <CIM-ResidesOnExtent>`
+|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_ResidesOnExtent <LMI-ResidesOnExtent>`
 |    \|--- \* :ref:`CIM_HostedDependency <CIM-HostedDependency>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_HostedService <CIM-HostedService>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_HostedStorageService <LMI-HostedStorageService>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_HostedCollection <CIM-HostedCollection>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_HostedStorageStatisticsCollection <LMI-HostedStorageStatisticsCollection>`
-|    \|--- \* :ref:`LMI_HostedMount <LMI-HostedMount>`
-|    \|--- \* :ref:`CIM_ResidesOnExtent <CIM-ResidesOnExtent>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_ResidesOnExtent <LMI-ResidesOnExtent>`
-|    \|--- \* :ref:`LMI_AttachedFileSystem <LMI-AttachedFileSystem>`
 |    \|--- \* :ref:`CIM_InstalledPartitionTable <CIM-InstalledPartitionTable>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_InstalledPartitionTable <LMI-InstalledPartitionTable>`
 | \* :ref:`CIM_ElementCapabilities <CIM-ElementCapabilities>`

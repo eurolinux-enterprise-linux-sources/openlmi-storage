@@ -32,11 +32,12 @@ import lmi.providers.cmpi_logging as cmpi_logging
 import blivet.formats
 import pywbem
 import os
+from lmi.storage.util import storage
 
 class LMI_TransientFileSystem(LocalFileSystemProvider):
     """
         Generic file system provider for filesystems which do not have
-        it's own provider and device.
+        their own provider and device.
     """
     @cmpi_logging.trace_method
     def __init__(self, *args, **kwargs):

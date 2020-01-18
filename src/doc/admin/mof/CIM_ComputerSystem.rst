@@ -146,6 +146,7 @@ Local methods
 
 ``uint32`` **SetPowerState** (``uint32`` PowerState, ``datetime`` Time)
 
+    **Deprecated!** 
     Sets the power state of the computer. The use of this method has been deprecated. Instead, use the SetPowerState method in the associated PowerManagementService class.
 
     

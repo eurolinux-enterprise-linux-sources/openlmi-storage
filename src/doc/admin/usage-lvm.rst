@@ -1,25 +1,41 @@
 Logical Volume management
 =========================
 
-Volume Groups (VG) are represented by,
-:ref:`LMI_VGStoragePool <LMI-VGStoragePool>` class.
+Volume Groups (VG) and Thin Pools (TP) are represented by
+:ref:`LMI_VGStoragePool <LMI-VGStoragePool>` class. To differentiate between the
+two, `SpaceLimitDetermination` and `SpaceLimit` are both set or both empty.
 
+If both are set, an instance of the class is a thin pool.
+`SpaceLimitDetermination` is always set to 4 (limitless thin pool, meaning that
+it can be overcommited) and `SpaceLimit` is set to the capacity of the storage
+allocated to the pool.  Also, `RemainingManagedSpace` will be set to the
+remaining space on the pool.  Due to the current limitation of the underlying
+storage library, if the pool is overcommited, its `RemainingManagedSpace` value
+is set to 0.
+
+If both `SpaceLimitDetermination` and `SpaceLimit` are empty, the instance of the
+:ref:`LMI_VGStoragePool <LMI-VGStoragePool>` class is a regular volume group.
 
 Every :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` instance has associated one
 instance of :ref:`LMI_VGStorageSetting <LMI-VGStorageSetting>` representing its
 configuration (e.g. volume group extent size) and one instance of
 :ref:`LMI_LVStorageCapabilities <LMI-LVStorageCapabilities>`, representing its
 ability to create logical volumes (for SMI-S applications).
+Every :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` instance, if it is a thin
+pool, is associated with its thin logical volumes (if they exist) using
+:ref:`LMI_VGAllocatedFromStoragePool <LMI-VGAllocatedFromStoragePool>`.
 
 Physical Volumes (PV) are associated to VGs using
 :ref:`LMI_VGAssociatedComponentExtent <LMI-VGAssociatedComponentExtent>`
 association.
 
-Logical Volumes (LV) are represented by
-:ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` class. Each
-:ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` instance is associated to its
-VG using :ref:`LMI_LVAllocatedFromStoragePool <LMI-LVAllocatedFromStoragePool>`
-association.
+Logical Volumes (LV) and Thin Logical Volumes (TLV) are represented by
+:ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` class. If an instance of the
+class is a thin logical volume, `ThinlyProvisioned` is set to True.
+
+Each :ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` instance is associated to
+its respective VG/TP using :ref:`LMI_LVAllocatedFromStoragePool
+<LMI-LVAllocatedFromStoragePool>` association.
 
 In addition, LVs are associated to all PVs using
 :ref:`LMI_LVBasedOn <LMI-LVBasedOn>` association.
@@ -28,7 +44,7 @@ In addition, LVs are associated to all PVs using
 .. _diagram:
 
 Following instance diagram shows one Volume Group ``/dev/myGroup`` based on
-three Physical Volumes ``/dev/sda1``, ``/dev/sdb1 `` and ``/dev/sdc1`` and two
+three Physical Volumes ``/dev/sda1``, ``/dev/sdb1`` and ``/dev/sdc1`` and two
 Logical Volumes ``myVol1`` and ``myVol2``.
 
 .. figure:: pic/lvm-instance.svg
@@ -37,9 +53,19 @@ Note that the diagram is simplified and does not show
 :ref:`LMI_LVBasedOn <LMI-LVBasedOn>` association, which associates every
 ``myVolY`` to ``/dev/sdX1``.
 
-Currently the LVM support is limited to creation and removal of VGs and LVs. It
-is not possible to modify existing VG or LV, e.g. add or remove devices to/from
-VG and/or resize LVs. In future OpenLMI may be extended to have more
+The next instance diagram displays the Volume Group ``/dev/myGroup`` (see
+previous diagram_) that has ``myThinPool``, sized 100 MiB, associated to it.
+This Thin Pool is used to provision the 10 GiB Thin Logical Volume
+``/dev/mapper/myGroup-myThinVolume``. The VG/TP pair is connected with an
+:ref:`LMI_VGAllocatedFromStoragePool <LMI-VGAllocatedFromStoragePool>`
+association. :ref:`LMI_LVAllocatedFromStoragePool
+<LMI-LVAllocatedFromStoragePool>` association joins the TP/TLV pair.
+
+.. figure:: pic/lvm-thin.svg
+
+Currently the LVM support is limited to creation and removal of VGs and LVs and
+to adding/removing devices to/from a VG. It is not possible to modify existing
+LV, e.g. or resize LVs. In future OpenLMI may be extended to have more
 configuration options in :ref:`LMI_VGStorageSetting <LMI-VGStorageSetting>` and
 :ref:`LMI_LVStorageSetting <LMI-LVStorageSetting>`.
 
@@ -50,6 +76,14 @@ Useful methods
   Creates a Volume Group with given devices. The devices are automatically
   formatted with Physical Volume metadata. Optionally, the Volume Group extent
   size can be specified by using Goal parameter of the method.
+
+  This method can be also used to add/remove PVs to/from VG.
+
+:ref:`CreateOrModifyThinPool <LMI-StorageConfigurationService-CreateOrModifyThinPool>`
+  Creates or modifies a Thin Pool.
+
+:ref:`CreateOrModifyThinLV <LMI-StorageConfigurationService-CreateOrModifyThinLV>`
+  Create or modifies a Thin Logical Volume.
 
 :ref:`CreateOrModifyStoragePool <LMI-StorageConfigurationService-CreateOrModifyStoragePool>`
   Creates a Volume Group in SMI-S way.
@@ -68,13 +102,13 @@ Useful methods
   Creates a Logical Volume in SMI-S way.
 
 :ref:`DeleteLV <LMI-StorageConfigurationService-DeleteLV>`
-  Destroys a Logical Volume.
+  Destroys a Logical Volume or a Thin Logical Volume.
 
 :ref:`ReturnToStoragePool <CIM-StorageConfigurationService-ReturnToStoragePool>`
   Destroys a Logical Volume in SMI-S way.
 
 :ref:`DeleteVG <LMI-StorageConfigurationService-DeleteVG>`
-  Destroys a Volume Group.
+  Destroys a Volume Group or a Thin Pool.
 
 :ref:`DeleteStoragePool <CIM-StorageConfigurationService-DeleteStoragePool>`
   Destroys a Volume Group in SMI-S way.
@@ -108,6 +142,24 @@ with default extent size (4MiB)::
 The resulting VG is the same as shown in diagram_ above, except it does not have
 any LVs yet.
 
+Create Thin Pool
+^^^^^^^^^^^^^^^^
+
+The VG from the previous example can be used to create a TP on. This example
+script creates a Thin Pool 'myThinPool' on the VG 'myGroup'. The TP is 100 MiB
+in size::
+
+    vg = ns.LMI_VGStoragePool.first_instance({"InstanceID":"LMI:VG:myGroup"})
+
+    (ret, outparams, err) = storage_service.SyncCreateOrModifyThinPool(
+            ElementName="myThinPool",
+            InPool=vg.path,
+            # 100 MiB
+            Size=100 * MEGABYTE)
+    tp = outparams["Pool"].to_instance()
+    print "TP %s with %d MiB remaining" % \
+            (tp.Name, tp.RemainingManagedSpace / MEGABYTE)
+
 Create Volume Group in SMI-S way
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -134,6 +186,39 @@ with default extent size (4MiB)::
 
 The resulting VG is the same as shown in diagram_ above, except it does not have
 any LVs yet.
+
+Add and remove devices to/from a Volume Group
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:ref:`CreateOrModifyStoragePool <LMI-StorageConfigurationService-CreateOrModifyStoragePool>`
+can be used to modify exising VG. Its 'InExtents' parameter specifies
+new list of Physical Volumes of the VG. When an PV is being removed
+from a VG, all its data are safely moved to a free PV.
+
+Continuing with previous example, let's remove '/dev/sda1' from the VG and
+add '/dev/sdd1' to it::
+
+    # Find all the devices we want to be in VG
+    # (filtering one CIM_StorageExtent.instances()
+    # call would be faster, but this is easier to read)
+    sdb1 = ns.CIM_StorageExtent.first_instance({"Name": "/dev/sdb1"})
+    sdc1 = ns.CIM_StorageExtent.first_instance({"Name": "/dev/sdc1"})
+    sdd1 = ns.CIM_StorageExtent.first_instance({"Name": "/dev/sdd1"})
+
+    new_pvs = [sdb1, sdc1, sdd1]              # Without sda1!
+
+    # Find the VG
+    vg = ns.LMI_VGStoragePool.first_instance({"Name": "/dev/mapper/myGroup"})
+
+    # Set the list of PVs of the VG.
+    # All existing PVs, which are not listed in InExtents parameter will
+    # be removed from the VG. All new devices listed in InExtents parameter
+    # are added to the VG. All data in the VG are moved from the PVs being
+    # removed to a free PV, no data is lost.
+
+    (ret, outparams, err) = storage_service.SyncCreateOrModifyVG(
+            InExtents=new_pvs,
+            pool=vg.path)
 
 
 Create Volume Group with specific extent size
@@ -221,6 +306,25 @@ method. Following example creates two 100MiB volumes::
 
 The resulting LVs are the same as shown in diagram_ above.
 
+Create Thin Logical Volume
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following example assumes that a TP was already created (see `Create Thin Pool`_).
+
+There already is a TP (100 MiB) in the system. This snippet of code creates a 10
+GiB Thin Logical Volume and prints some information about it. Note that this TLV
+causes the underlying TP to be overcommited::
+
+    tp = ns.LMI_VGStoragePool.first_instance({"ElementName":"myThinPool"})
+
+    (ret, outparams, err) = storage_service.SyncCreateOrModifyThinLV(
+            ElementName="myThinLV",
+            ThinPool=tp.path,
+            # 10 GiB
+            Size=10 * GIGABYTE)
+    tlv = outparams["TheElement"].to_instance()
+    print "TLV %s of size %d GiB" % \
+           (tlv.Name, tlv.BlockSize * tlv.NumberOfBlocks / GIGABYTE)
 
 Create Logical Volume in SMI-S way
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -276,14 +380,12 @@ Future direction
 
 In future, we might implement:
 
-* Modification of existing VGs and LVs, for example adding/removing devices
+* Modification of existing VGs and LVs, for example renaming VGs and LVs
   and resizing LVs.
 
 * LVs with stripping and mirroring.
 
 * Clustered VGs and LVs.
-
-* Thin pools and volumes.
 
 * Snapshots.
 

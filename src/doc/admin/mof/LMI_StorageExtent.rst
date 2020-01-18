@@ -52,13 +52,20 @@ Local properties
     Indicates whether or not there exists no single point of failure.
 
     
+.. _LMI-StorageExtent-DeviceBusType:
+
+``string`` **DeviceBusType**
+
+    Name of bus, used to connect the block device, such as USB, SCSI or ATA. This property is available mostly for disk block devices, not for their descendants like partitions, logical volumes and so on. Note that the list of values may not be complete and is not guaranteed to be stable.
+
+    
 .. _LMI-StorageExtent-ElementName:
 
 ``string`` **ElementName**
 
-    A user-friendly name for the object. This property allows each instance to define a user-friendly name in addition to its key properties, identity data, and description information. 
+    A user-friendly name for the object. This property allows each instance to define a user-friendly name in addition to its key properties, identity data, and description information.
 
-    Usually it is name of the device, i.e. 'sda' in case of /dev/sda block device or 'myraid' in case of /dev/md/myraid or name of a Logical Volume. Subclasses may define it's own ElementName format.
+    Usually it is name of the device, i.e. 'sda' in case of /dev/sda block device or 'myraid' in case of /dev/md/myraid or name of a Logical Volume. Subclasses may define its own ElementName format.
 
     
 .. _LMI-StorageExtent-NameNamespace:

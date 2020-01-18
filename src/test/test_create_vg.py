@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- Coding:utf-8 -*-
 #
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 
 from test_base import StorageTestBase, short_tests_only
 import unittest
@@ -173,6 +174,191 @@ class TestCreateVG(StorageTestBase):
                     int, None,
                     Pool=vg)
             self.assertEquals(ret, 0)
+
+    def _create_disposable_vg(self, element_name):
+        (ret, outparams) = self.invoke_async_method(
+            'CreateOrModifyVG',
+            self.service,
+            int, 'pool',
+            InExtents=[self.partition_names[-1]],
+            ElementName=element_name)
+        self.assertEquals(ret, 0)
+        return (ret, outparams)
+
+    def _delete_vg(self, vgname):
+        (ret, outparams) = self.invoke_async_method(
+                'DeleteVG',
+                self.service,
+                int, None,
+                Pool=vgname)
+        self.assertEquals(ret, 0)
+        return (ret, outparams)
+
+    def _delete_lv(self, lvname):
+        (ret, outparams) = self.invoke_async_method(
+                'DeleteLV',
+                self.service,
+                int, None,
+                TheElement=lvname)
+        self.assertEquals(ret, 0)
+        return (ret, outparams)
+
+    def test_create_thin_pool(self):
+        """
+        Test CreateOrModifyThinPool.
+        """
+        (ret, outparams) = self._create_disposable_vg('tstThinPoolVG')
+        vg = outparams['pool']
+
+        # create
+        (ret, outparams) = self.invoke_async_method(
+            'CreateOrModifyThinPool',
+            self.service,
+            int, 'pool',
+            InPool=vg,
+            ElementName='tstThinPool',
+            Size=pywbem.Uint64(32 * MEGABYTE))
+        self.assertEquals(ret, 0)
+        tp = outparams['pool']
+
+        self._delete_vg(tp)
+        self._delete_vg(vg)
+
+    def test_create_thin_lv(self):
+        """
+        Test CreateOrModifyThinLV.
+        """
+        (ret, outparams) = self._create_disposable_vg('tstThinPoolVG')
+        vg = outparams['pool']
+
+        # create thinpool
+        (ret, outparams) = self.invoke_async_method(
+            'CreateOrModifyThinPool',
+            self.service,
+            int, 'pool',
+            InPool=vg,
+            ElementName='tstThinPool',
+            Size=pywbem.Uint64(32 * MEGABYTE))
+        self.assertEquals(ret, 0)
+        tp = outparams['pool']
+
+        (ret, outparams) = self.invoke_async_method(
+            'CreateOrModifyThinLV',
+            self.service,
+            int, 'theelement',
+            ThinPool=tp,
+            ElementName='tstThinLV',
+            Size=pywbem.Uint64(MEGABYTE * MEGABYTE)) # way overcommited
+        self.assertEquals(ret, 0)
+        tlv = outparams['theelement']
+
+        self._delete_lv(tlv)
+        self._delete_vg(tp)
+        self._delete_vg(vg)
+
+    def _invoke_create_or_modify_sp(self, **kwargs):
+        """
+        Wrapper around invoke_async_method, that calls CreateOrModifyStoragePool
+        with arguments passed in `kwargs'.
+
+        By default, if pywbem.CIMError is caught, the test fails. If `kwargs'
+        contains a special argument 'Fail' set to True, the test does not fail
+        and any exception risen by CreateOrModifyStoragePool is re-thrown.
+        """
+        fail = kwargs.pop('Fail', True)
+        try:
+            (ret, outparams) = self.invoke_async_method(
+                'CreateOrModifyStoragePool',
+                self.service,
+                int, 'pool',
+                **kwargs)
+        except pywbem.CIMError as pe:
+            if fail:
+                self.fail(pe[1])
+            else:
+                raise pe
+        return (ret, outparams)
+
+    def test_thin_pool_using_create_or_modify_storage_pool(self):
+        str_inextents = map(str, self.partition_names[:2])
+        (ret, outparams) = self._invoke_create_or_modify_sp(
+            ElementName='tstName',
+            InExtents=str_inextents)
+
+        vg = outparams['pool']
+        str_inpools = map(str, [vg])
+
+        goal = self._create_setting()
+        # ThinlyProvisionedLimitlessStoragePool = 9
+        goal['ThinProvisionedPoolType'] = pywbem.Uint16(9)
+        self.wbemconnection.ModifyInstance(goal)
+
+        (ret, outparams) = self._invoke_create_or_modify_sp(
+            ElementName='tstThinPool',
+            Goal=goal.path,
+            InPools=str_inpools,
+            Size=pywbem.Uint64(32 * MEGABYTE))
+        self.assertEquals(ret, 0)
+        tp = outparams['pool']
+
+        # try to rename the thin pool
+        self.assertRaisesRegexp(pywbem.CIMError,
+                                "Rename of thin pool is not yet supported",
+                                self._invoke_create_or_modify_sp,
+                                Fail=False,
+                                ElementName='tstThinPool-rename',
+                                Goal=goal.path,
+                                Pool=tp)
+
+        # try to resize the thin pool
+        self.assertRaisesRegexp(pywbem.CIMError,
+                                "device is not resizable",
+                                self._invoke_create_or_modify_sp,
+                                Fail=False,
+                                Goal=goal.path,
+                                Pool=tp,
+                                Size=pywbem.Uint64(64 * MEGABYTE))
+
+        self._delete_vg(tp)
+        self._delete_vg(vg)
+
+    def test_create_vg_using_create_or_modify_storage_pool(self):
+        """
+        Create a VG from 2 PV using the standard SMI-S method.
+
+        CreateOrModifyStoragePool uses an array of strings for the InExtents
+        parameter.
+        """
+        str_inextents = map(str, self.partition_names[:2])
+
+        try:
+            (ret, outparams) = self.invoke_async_method(
+                'CreateOrModifyStoragePool',
+                self.service,
+                int, 'pool',
+                InExtents=str_inextents,
+                ElementName='tstName')
+        except pywbem.CIMError as pe:
+            self.fail(pe[1])
+
+        vg = self.wbemconnection.GetInstance(outparams['pool'])
+
+        if len(outparams) == 1:
+            # there is no Size returned, Pegasus does not support it yet
+            # TODO: remove when pegasus supports embedded objects of unknown
+            # types, rhbz#920763
+            outparams['size'] = vg['TotalExtents'] * vg['ExtentSize']
+
+        self.assertEqual(ret, 0)
+        self.assertEqual(len(outparams), 2)
+
+        vg = outparams['pool']
+        (ret, outparams) = self.invoke_async_method(
+            'DeleteVG',
+            self.service,
+            int, None,
+            Pool=vg)
+        self.assertEquals(ret, 0)
 
     def test_create_unknown_setting(self):
         """ Test CreateOrModifyVG with non-existing setting."""

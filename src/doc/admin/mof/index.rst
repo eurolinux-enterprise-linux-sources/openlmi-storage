@@ -58,6 +58,7 @@ Class reference
     CIM_ManagedElement
     CIM_ManagedSystemElement
     CIM_MediaPartition
+    CIM_MediaPresent
     CIM_MemberOfCollection
     CIM_MethodResult
     CIM_OwningJobElement
@@ -132,6 +133,7 @@ Class reference
     LMI_MDRAIDStorageCapabilities
     LMI_MDRAIDStorageExtent
     LMI_MDRAIDStorageSetting
+    LMI_MediaPresent
     LMI_MemberOfBlockStatisticsManifestCollection
     LMI_MemberOfStorageStatisticsCollection
     LMI_MethodResult
@@ -158,6 +160,7 @@ Class reference
     LMI_StorageStatisticsCollection
     LMI_SystemStorageDevice
     LMI_TransientFileSystem
+    LMI_VGAllocatedFromStoragePool
     LMI_VGAssociatedComponentExtent
     LMI_VGElementCapabilities
     LMI_VGElementSettingData

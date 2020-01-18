@@ -4,7 +4,7 @@
        "\n"
        "Any CIM_StorageExtent can be partitioned, but it's strongly "
        "recommended to partition only disks."
-       "\n Several partition styles are supported, see "
+       "\nSeveral partition styles are supported, see "
        "LMI_DiskPartitionConfigurationCapabilities instances. "
        "GPT partition style is strongly recommended. While MS-DOS (MBR) "
        "style partitions are fully supported, creation and modification of "
@@ -65,7 +65,7 @@ class LMI_DiskPartitionConfigurationService : CIM_DiskPartitionConfigurationServ
           "the resulting partition will occupy the entire "
           "underlying extent. If the starting address is non-null "
           "and the ending address is null, the resulting partition "
-          "will extend to the end of the underlying extent. \n"
+          "will extend to the end of the underlying extent.\n"
           "\n"
           "In contradiction to SMI-S, no LogicalDisk will be created "
           "on the partition."
@@ -318,7 +318,7 @@ class LMI_DiskPartitionConfigurationSetting : CIM_SettingData
     );
 };
 
-[Version("0.6.0"), Experimental, Description("This class represents primary, extended and logical partitions on "
+[Version("0.8.0"), Experimental, Description("This class represents primary, extended and logical partitions on "
     "devices with MS-DOS (MBR) style partition tables.")]
 class LMI_DiskPartition : CIM_DiskPartition
 {
@@ -345,9 +345,17 @@ class LMI_DiskPartition : CIM_DiskPartition
           "All names, under which this device is known. "
           "All these names are symlinks to one block device.")]
     string Names[];
+
+    [ Implemented(true), Description(
+         "Name of bus, used to connect the block device, such as USB, SCSI or "
+         "ATA. This property is available mostly for disk block devices, not "
+         "for their descendants like partitions, logical volumes and so on. "
+         "Note that the list of values may not be complete and is not guaranteed "
+         "to be stable.")]
+    string DeviceBusType;
 };
 
-[Version("0.6.0"), Experimental, Description("This class represents partitions on "
+[Version("0.8.0"), Experimental, Description("This class represents partitions on "
     "devices with other than MBR partition tables.")]
 class LMI_GenericDiskPartition : CIM_GenericDiskPartition
 {
@@ -372,6 +380,15 @@ class LMI_GenericDiskPartition : CIM_GenericDiskPartition
           "All names, under which this device is known. "
           "All these names are symlinks to one block device.")]
     string Names[];
+
+    [ Implemented(true), Description(
+         "Name of bus, used to connect the block device, such as USB, SCSI or "
+         "ATA. This property is available mostly for disk block devices, not "
+         "for their descendants like partitions, logical volumes and so on. "
+         "Note that the list of values may not be complete and is not guaranteed "
+         "to be stable.")]
+    string DeviceBusType;
+
 };
 
 [ Version("0.5.1"), Experimental ]
@@ -397,6 +414,14 @@ class LMI_DiskPartitionElementSettingData : CIM_ElementSettingData
 {
     [Implemented(true)] uint16 IsCurrent;
 };
+
+
+[ Version("0.8.0"), Experimental ]
+class LMI_MediaPresent : CIM_MediaPresent
+{
+};
+
+
 
 /*
  Special comment for openlmi-doc-mof2rst to generate documentation of following

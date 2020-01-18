@@ -108,7 +108,7 @@ Supported event filters
 
     SELECT * FROM LMI_StorageInstModification
         WHERE SourceInstance ISA LMI_StorageJob
-            AND SourceInstance.CIM_ConcreteJob::JobState = 17
+            AND SourceInstance.CIM_ConcreteJob::JobState = 7
 
 * A job reaches state "Completed/Error"::
 

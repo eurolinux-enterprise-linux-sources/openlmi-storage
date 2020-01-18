@@ -56,6 +56,7 @@ figures: pic/partitions.png \
     pic/partition-instance.svg \
     pic/raid5-instance.svg \
     pic/lvm-instance.svg \
+    pic/lvm-thin.svg \
     pic/fs-instance.svg \
     pic/job-states.svg \
     pic/job-affected-before.svg \

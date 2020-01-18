@@ -168,7 +168,7 @@ class TestCreateMDRAID(StorageTestBase):
         self.assertAlmostEqual(
                 outparams['size'],
                 expected_size,
-                delta=4 * MEGABYTE)
+                delta=10 * MEGABYTE)
         raidname = outparams['theelement']
         raid = self.wbemconnection.GetInstance(raidname)
         self.assertNotEqual(raid['UUID'], '')

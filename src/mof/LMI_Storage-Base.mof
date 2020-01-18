@@ -1,4 +1,4 @@
-[ Version("0.6.0"), Experimental,
+[ Version("0.8.0"), Experimental,
   Description("This is generic class describing block devices "
     "available on the system, i.e. in machine's /dev/ directory.")]
 class LMI_StorageExtent : CIM_StorageExtent
@@ -7,11 +7,11 @@ class LMI_StorageExtent : CIM_StorageExtent
           "A user-friendly name for the object. This property "
           "allows each instance to define a user-friendly name in "
           "addition to its key properties, identity data, and "
-          "description information. \n"
+          "description information.\n"
           "Usually it is name of the device, i.e. 'sda' in case of /dev/sda "
           "block device or 'myraid' in case of /dev/md/myraid or name of a "
           "Logical Volume. "
-          "Subclasses may define it's own ElementName format." )]
+          "Subclasses may define its own ElementName format." )]
     string ElementName;
 
     [Implemented(true), Description(
@@ -35,6 +35,14 @@ class LMI_StorageExtent : CIM_StorageExtent
     [ Implemented(true) ] uint64 BlockSize;
     [ Implemented(true) ] uint64 NumberOfBlocks;
     [ Implemented(true) ] uint64 ConsumableBlocks;
+
+    [ Implemented(true), Description(
+         "Name of bus, used to connect the block device, such as USB, SCSI or "
+         "ATA. This property is available mostly for disk block devices, not "
+         "for their descendants like partitions, logical volumes and so on. "
+         "Note that the list of values may not be complete and is not guaranteed "
+         "to be stable.")]
+    string DeviceBusType;
 };
 
 [ Version("0.5.1"), Experimental ]

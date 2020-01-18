@@ -48,7 +48,7 @@ instance of CIM_IndicationFilter {
     Query = "SELECT * FROM LMI_StorageInstModification WHERE "
             "SourceInstance ISA LMI_StorageJob AND "
             "SourceInstance.CIM_ConcreteJob::JobState"
-            " = 17";
+            " = 7";
     SourceNamespace = "root/cimv2";
     SourceNamespaces = {"root/cimv2"};
 };

@@ -139,10 +139,10 @@ class LMI_ExtentEncryptionConfigurationService(ServiceProvider):
         # destroy previous format
         destroyAction = blivet.ActionDestroyFormat(device)
         fmt = blivet.formats.luks.LUKS(device=device.path, passphrase=passphrase, mapName=None)
-        action = blivet.ActionCreateFormat(device, format=fmt)
+        action = blivet.ActionCreateFormat(device, fmt)
         lmi.storage.util.storage.do_storage_action(self.storage, [destroyAction, action])
 
-        new_device = self.storage.devicetree.getDeviceByPath(device.path)
+        new_device = getRealDeviceByPath(self.storage, device.path)
         if not new_device:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                     "Cannot locate new format, was it removed?")
@@ -262,10 +262,10 @@ class LMI_ExtentEncryptionConfigurationService(ServiceProvider):
         device.format.mapName = elementname
         device.format.passphrase = passphrase
         luksdevice = blivet.devices.LUKSDevice(elementname,
+                                               device.format,
                                                size=device.size,
                                                uuid=device.format.uuid,
                                                sysfsPath=device.sysfsPath,
-                                               format=device.format,
                                                parents=[device],
                                                exists=False)
         # See BUG #996457.
@@ -273,7 +273,7 @@ class LMI_ExtentEncryptionConfigurationService(ServiceProvider):
         action = blivet.ActionCreateDevice(luksdevice)
         lmi.storage.util.storage.do_storage_action(self.storage, [action])
 
-        new_device = self.storage.devicetree.getDeviceByPath(luksdevice.path)
+        new_device = getRealDeviceByPath(self.storage, luksdevice.path)
         if not new_device:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                     "Cannot locate new format, was it removed?")

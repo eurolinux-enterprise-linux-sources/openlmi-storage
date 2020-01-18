@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2013-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Synacek <jsynacek@redhat.com>
+#          Jan Safranek <jsafrane@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Python Provider for LMI_AttachedFileSystem
@@ -32,6 +33,7 @@ import blivet
 from lmi.storage.MountingProvider import MountingProvider
 import lmi.providers.cmpi_logging as cmpi_logging
 from lmi.providers.ComputerSystem import get_system_name
+from lmi.storage.util import storage
 
 class LMI_AttachedFileSystem(MountingProvider):
     """Instrument the CIM class LMI_AttachedFileSystem
@@ -73,12 +75,12 @@ class LMI_AttachedFileSystem(MountingProvider):
             if isinstance(device, blivet.devices.NoDevice):
                 paths = [device.format.mountpoint]
             else:
-                paths = blivet.util.get_mount_paths(device.path)
+                paths = storage.get_mount_paths(device)
 
             for path in paths:
                 provider = self.provider_manager.get_provider_for_format(device, device.format)
                 if provider is None:
-                    raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "Could not get provider for %s" % path)
+                    continue
 
                 model['Antecedent'] = provider.get_name_for_format(device, device.format)
                 model['Dependent'] = pywbem.CIMInstanceName(

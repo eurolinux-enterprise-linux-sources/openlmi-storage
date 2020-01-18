@@ -51,6 +51,7 @@ Inherited properties
 | ``datetime`` :ref:`TimeOfLastStateChange <CIM-EnabledLogicalElement-TimeOfLastStateChange>`
 | ``uint64`` :ref:`PowerOnHours <CIM-LogicalDevice-PowerOnHours>`
 | ``string`` :ref:`Status <CIM-ManagedSystemElement-Status>`
+| ``string`` :ref:`DeviceBusType <LMI-StorageExtent-DeviceBusType>`
 | ``string`` :ref:`ElementName <LMI-StorageExtent-ElementName>`
 | ``uint64`` :ref:`Generation <CIM-ManagedElement-Generation>`
 | ``datetime`` :ref:`InstallDate <CIM-ManagedSystemElement-InstallDate>`

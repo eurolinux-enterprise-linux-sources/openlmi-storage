@@ -27,6 +27,8 @@ import subprocess
 import time
 import re
 
+MEGABYTE = 1024 * 1024
+
 class TestMounting(StorageTestBase):
     @classmethod
     def setUpClass(cls):
@@ -152,9 +154,7 @@ class TestMounting(StorageTestBase):
                 self.fail("No associations with '%s'" % (partition))
             self.assertTrue(assoc_elems[0]['AllowWrite'])
             self.assertTrue(assoc_elems[0]['UpdateRelativeAccessTimes'])
-            if fstype != 'btrfs':
-                # Blivet just says 'defaults', so look for that
-                self.assertEquals(assoc_elems[0]['OtherOptions'], ['defaults'])
+            # we do not check OtherOptions because we don't know what the options are
 
             # unmount
             try:
@@ -247,6 +247,129 @@ class TestMounting(StorageTestBase):
             self.fail(pe[1])
         out = self._grep_mount(partition)
         self._check_partition_is_unmounted(partition)
+
+    def _test_device_mount(self, devicename):
+        # format it
+        EXT3 = 12  # LMI_FileSystemSetting.ActualFileSystemType
+        fs_service = self.wbemconnection.EnumerateInstanceNames(
+                "LMI_FileSystemConfigurationService")[0]
+        (ret, outparams) = self.invoke_async_method(
+                "LMI_CreateFileSystem",
+                fs_service,
+                int, "theelement",
+                InExtents=[devicename],
+                FileSystemType=pywbem.Uint16(EXT3))
+        self.assertEqual(ret, 0)
+        fsname = outparams['theelement']
+        fs = self.wbemconnection.GetInstance(fsname)
+
+        self._mount(self.mnt_dir, fs['ElementName'], "ext3")
+
+        # check it is really mounted
+        mounted_fss = self.wbemconnection.AssociatorNames(fsname, ResultClass="LMI_MountedFileSystem")
+        self.assertEqual(len(mounted_fss), 1)
+
+        # unmount
+        self._umount(self.mnt_dir, fs['ElementName'], "ext3")
+
+    def test_raid_mount(self):
+        """
+        Test mounting of MD RAID.
+        This tests rhbz#1057666.
+        """
+        # create MD RAID
+        raidname = self._create_mdraid(self.partition_names[-2:], 0);
+        try:
+            self._test_device_mount(raidname)
+        finally:
+            try:
+                if raidname:
+                    self._delete_mdraid(raidname)
+            except Exception, ex:
+                # ignore any error, we want the original exception
+                print "Error cleaning up RAID:", ex
+                pass
+
+    def test_lv_mount(self):
+        """
+        Test mounting of a logical volume.
+        """
+        lvname = None
+        # create VG
+        storage_service = self.wbemconnection.EnumerateInstanceNames(
+                "LMI_StorageConfigurationService")[0]
+        (ret, outparams) = self.invoke_async_method(
+                "CreateOrModifyVG",
+                storage_service,
+                int, "pool",
+                InExtents=self.partition_names[-2:],
+                ElementName="myVG")
+        self.assertEqual(ret, 0)
+        vgname = outparams['pool']
+
+        try:
+            # create LV
+            (retval, outparams) = self.invoke_async_method(
+                    "CreateOrModifyLV",
+                    storage_service,
+                    int, "TheElement",
+                    InPool=vgname,
+                    Size=pywbem.Uint64(20 * MEGABYTE))
+            self.assertEqual(retval, 0)
+            lvname = outparams['TheElement']
+
+            self._test_device_mount(lvname)
+        finally:
+            try:
+                if lvname:
+                    self.invoke_async_method("DeleteLV", storage_service,
+                            int, None, TheElement=lvname)
+                if vgname:
+                    self.invoke_async_method("DeleteVG", storage_service, int,
+                            None, Pool=vgname)
+            except Exception, ex:
+                # ignore any error, we want the original exception
+                print "Error cleaning up LVM:", ex
+
+    def test_luks_mount(self):
+        """
+        Test mounting of a luks volume.
+        """
+        passphrase = "23rnv0as0df23n"
+        luks_service = self.wbemconnection.EnumerateInstanceNames(
+                "LMI_ExtentEncryptionConfigurationService")[0]
+
+        (ret, outparams) = self.invoke_async_method("CreateEncryptionFormat",
+                luks_service,
+                int,
+                InExtent=self.partition_names[-1],
+                Passphrase=passphrase)
+        self.assertEquals(ret, 0)
+        luksfmt = outparams['Format']
+
+        (ret, outparams) = self.invoke_async_method(
+                "OpenEncryptionFormat",
+                luks_service,
+                int,
+                ElementName='opened',
+                Passphrase=passphrase,
+                Format=luksfmt)
+        luksname = outparams['Extent']
+
+        self.assertEquals(ret, 0)
+        try:
+            self._test_device_mount(luksname)
+        finally:
+            try:
+                (ret, outparams) = self.invoke_async_method(
+                    "CloseEncryptionFormat",
+                    luks_service,
+                    int,
+                    Format=luksfmt)
+            except Exception, ex:
+                # ignore any error, we want the original exception
+                print "Error cleaning up LUKS:", ex
+
 
     # TODO more settings coverage for various filesystem types
     # more advanced settings tests

@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Module for LMI_VGStoragePool class.
@@ -76,7 +77,8 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
             Returns True, if this class is provider for given Anaconda
             StorageDevice class.
         """
-        if  isinstance(device, blivet.devices.LVMVolumeGroupDevice):
+        if isinstance(device, blivet.devices.LVMVolumeGroupDevice) or \
+           isinstance(device, blivet.devices.LVMThinPoolDevice):
             return True
         return False
 
@@ -90,7 +92,7 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
             instance_id = object_name['InstanceID']
             parts = instance_id.split(":")
             vgname = parts[2]
-            for vg in self.storage.vgs:
+            for vg in self.storage.vgs + self.storage.thinpools:
                 if vg.name == vgname:
                     return vg
             return None
@@ -125,19 +127,32 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
                     "Cannot find the VG.")
 
         model['Primordial'] = False
-        model['ElementName'] = device.name
+
         model['PoolID'] = device.name
         model['Name'] = device.path
-
-        model['TotalManagedSpace'] = pywbem.Uint64(
-                device.extents * device.peSize * units.MEGABYTE)
-        model['RemainingManagedSpace'] = pywbem.Uint64(
-                device.peFree * device.peSize * units.MEGABYTE)
-
-        model['ExtentSize'] = pywbem.Uint64(device.peSize * units.MEGABYTE)
-        model['TotalExtents'] = pywbem.Uint64(device.extents)
-        model['RemainingExtents'] = pywbem.Uint64(device.peFree)
         model['UUID'] = device.uuid
+
+        # it's important to check for LVMThinPoolDevice first, because it is a subclass of LVMVolumeGroupDevice
+        if isinstance(device, blivet.devices.LVMThinPoolDevice):
+            model['ElementName'] = device.lvname
+            model['TotalManagedSpace'] = pywbem.Uint64(storage.from_blivet_size(device.size))
+            # workaround for #1034721
+            freespace = storage.from_blivet_size(device.freeSpace)
+            if freespace < 0:
+                model['RemainingManagedSpace'] = pywbem.Uint64(0)
+            else:
+                model['RemainingManagedSpace'] = pywbem.Uint64(freespace)
+            model['SpaceLimit'] = pywbem.Uint64(storage.from_blivet_size(device.size))
+            model['SpaceLimitDetermination'] = self.Values.SpaceLimitDetermination.Limitless
+            model['ThinProvisionMetaDataSpace'] = pywbem.Uint64(storage.from_blivet_size(device.metaDataSize))
+        else:
+            model['ElementName'] = device.name
+            peSize = storage.from_blivet_size(device.peSize)
+            model['TotalManagedSpace'] = pywbem.Uint64(device.extents * peSize)
+            model['RemainingManagedSpace'] = pywbem.Uint64(device.peFree * peSize)
+            model['ExtentSize'] = pywbem.Uint64(peSize)
+            model['TotalExtents'] = pywbem.Uint64(device.extents)
+            model['RemainingExtents'] = pywbem.Uint64(device.peFree)
 
         return model
 
@@ -166,7 +181,7 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
         """
         model.path.update({'InstanceID': None})
 
-        for device in self.storage.vgs:
+        for device in self.storage.vgs + self.storage.thinpools:
             name = self.get_name_for_device(device)
             model['InstanceID'] = name['InstanceID']
             if keys_only:
@@ -201,7 +216,7 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
             The type of element for which supported size ranges are
             reported. The Thin Provision values are only supported when
             the Thin Provisioning Profile is supported; the resulting
-            StorageVolues/LogicalDisk shall have ThinlyPprovisioned set to
+            StorageVolues/LogicalDisk shall have ThinlyProvisioned set to
             true.
 
         param_volumesizedivisor --  The input parameter VolumeSizeDivisor (type pywbem.Uint64)
@@ -253,9 +268,8 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
 
         # TODO: check Goal setting!
 
-        extent_size = long(device.peSize * units.MEGABYTE)
-        available_size = long(
-                device.peSize * device.freeExtents * units.MEGABYTE)
+        extent_size = storage.from_blivet_size(device.peSize)
+        available_size = long(extent_size * device.freeExtents)
 
         out_params = []
         out_params += [pywbem.CIMParameter('minimumvolumesize', type='uint64',
@@ -278,8 +292,15 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
                 setting_provider.create_setting_id(_id),
                 class_to_create=StorageSetting)
         setting.set_setting(self.get_redundancy(device))
-        setting['ExtentSize'] = device.peSize * units.MEGABYTE
         setting['ElementName'] = device.path
+
+        if device.type == 'lvmthinpool':
+            setting['SpaceLimit'] = storage.from_blivet_size(device.size)
+            setting['ThinProvisionedPoolType'] = \
+                self.Values.ThinProvisionedPoolType.ThinlyProvisionedLimitlessStoragePool
+        elif device.type == 'lvmvg':
+            setting['ExtentSize'] = storage.from_blivet_size(device.peSize)
+
         return setting
 
     @cmpi_logging.trace_method
@@ -288,7 +309,7 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
             This method returns iterable with all instances of LMI_*Setting
             as Setting instances.
         """
-        for lv in self.storage.vgs:
+        for lv in self.storage.vgs + self.storage.thinpools:
             yield self._get_setting_for_device(lv, setting_provider)
 
     @cmpi_logging.trace_method
@@ -306,11 +327,6 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
         device = storage.get_device_for_persistent_name(self.storage, path)
         if not path:
             return None
-        if not isinstance(device,
-                blivet.devices.LVMVolumeGroupDevice):
-            LOG().trace_warn("InstanceID %s is not LVMLogicalVolumeDevice",
-                    instance_id)
-            return None
         return self._get_setting_for_device(device, setting_provider)
 
     @cmpi_logging.trace_method
@@ -325,11 +341,6 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
             return None
         device = storage.get_device_for_persistent_name(self.storage, path)
         if not device:
-            return None
-        if not isinstance(device,
-                blivet.devices.LVMVolumeGroupDevice):
-            LOG().trace_warn("InstanceID %s is not LVMLogicalVolumeDevice",
-                    instance_id)
             return None
         return self.get_name_for_device(device)
 
@@ -355,6 +366,9 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
                 'PackageRedundancyMax' : pywbem.Uint16,
                 'PackageRedundancyMin' : pywbem.Uint16,
                 'ParityLayout' : pywbem.Uint16,
+                'SpaceLimit': pywbem.Uint64,
+                'ThinProvisionedInitialReserve': pywbem.Uint64,
+                'ThinProvisionedPoolType': pywbem.Uint16,
         }
 
     @cmpi_logging.trace_method
@@ -369,8 +383,6 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
                 'CompressedElement': False,
                 'CompressionRate': 1,
                 'InitialSynchronization': 0,
-                'SpaceLimit': 0,
-                'ThinProvisionedInitialReserve': 0,
                 'UseReplicationBuffer': 0,
         }
 
@@ -424,3 +436,13 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
                 Logical_Disk = pywbem.Uint16(4)
                 Thin_Provisioned_Volume = pywbem.Uint16(5)
                 Thin_Provisioned_Logical_Disk = pywbem.Uint16(6)
+
+        class SpaceLimitDetermination(object):
+            Allocated = pywbem.Uint16(2)
+            Quote = pywbem.Uint16(3)
+            Limitless = pywbem.Uint16(4)
+
+        class ThinProvisionedPoolType(object):
+            ThinlyProvisionedAllocatedStoragePool = pywbem.Uint16(7)
+            ThinlyProvisionedQuotaStoragePool = pywbem.Uint16(8)
+            ThinlyProvisionedLimitlessStoragePool = pywbem.Uint16(9)

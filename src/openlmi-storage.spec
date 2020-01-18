@@ -1,7 +1,7 @@
 %global logfile %{_localstatedir}/log/openlmi-install.log
 
 Name:           openlmi-storage
-Version:        0.7.1
+Version:        0.8.0
 Release:        1
 Summary:        CIM providers for storage management
 
@@ -26,6 +26,8 @@ Requires(post): openlmi-providers >= 0.4.1
 Requires:       openlmi-logicalfile
 # For filesystems:
 Requires:       xfsprogs, btrfs-progs, e2fsprogs, dosfstools
+# For scsi-rescan:
+Requires:       sg3_utils
 
 %description
 The openlmi-storage package contains CMPI providers for management of storage
@@ -59,6 +61,10 @@ install -m 644 mof/* $RPM_BUILD_ROOT/%{_datadir}/%{name}/
 # Configuration file
 install -m 755 -d $RPM_BUILD_ROOT/%{_sysconfdir}/openlmi/storage
 install -m 644 storage.conf $RPM_BUILD_ROOT/%{_sysconfdir}/openlmi/storage/storage.conf
+
+# Tempfiles file
+install -m 755 -d $RPM_BUILD_ROOT/%{_prefix}/lib/tmpfiles.d/
+install -m 644 openlmi-storage.tmpfiles.conf $RPM_BUILD_ROOT/%{_prefix}/lib/tmpfiles.d/%{name}.conf
 
 # SELinux wrapper
 install -m 755 -d $RPM_BUILD_ROOT/%{_libexecdir}/pegasus
@@ -115,6 +121,11 @@ if [ "$1" -ge 1 ]; then
         %{_datadir}/%{name}/70_LMI_Storage-Profiles.mof || :
 fi >> %logfile 2>&1
 
+# Create /run/openlmi-storage in case someone starts the provider
+# before the machine is restarted (and tmpfiles.d/openlmi-storage.conf
+# is executed)
+systemd-tmpfiles --create %{_prefix}/lib/tmpfiles.d/%{name}.conf
+
 %preun
 # Deregister only if not upgrading
 if [ "$1" -eq 0 ]; then
@@ -142,11 +153,18 @@ fi >> %logfile 2>&1
 %config(noreplace,missingok) %{_sysconfdir}/openlmi/storage/storage.conf
 %{_libexecdir}/pegasus/pycmpiLMI_Storage-cimprovagt
 %dir %{_localstatedir}/lib/%{name}
+%{_prefix}/lib/tmpfiles.d/%{name}.conf
 
 %files doc
 %{_docdir}/%{name}/admin_guide
 
 %changelog
+* Wed Sep  3 2014 Jan Safranek <jsafrane@redhat.com> - 0.8.0-1
+- Released new version.
+
+* Fri Jan 31 2014 Jan Safranek <jsafrane@redhat.com> - 0.7.1-2
+- Use /run/openlmi-storage for temporary files.
+
 * Tue Jan  7 2014 Jan Safranek <jsafrane@redhat.com> - 0.7.1-1
 - Released new version.
 

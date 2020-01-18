@@ -36,7 +36,7 @@ LOG = cmpi_logging.get_logger(__name__)
 class LMI_LocalFileSystem(LocalFileSystemProvider):
     """
         Generic file system provider for filesystems which do not have
-        it's own provider.
+        their own provider.
     """
     @cmpi_logging.trace_method
     def __init__(self, *args, **kwargs):

@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Module for LMI_LVStorageCapabilities class.
@@ -64,11 +65,6 @@ class LMI_LVStorageCapabilities(CapabilitiesProvider):
         device = storage.get_device_for_persistent_name(self.storage, path)
         if not device:
             return None
-        if not isinstance(device,
-                blivet.devices.LVMVolumeGroupDevice):
-            LOG().trace_warn("InstanceID %s is not LVMVolumeGroupDevice",
-                    instance_id)
-            return None
 
         if not self.pool_provider:
             self.pool_provider = self.provider_manager.get_provider_for_device(
@@ -78,7 +74,7 @@ class LMI_LVStorageCapabilities(CapabilitiesProvider):
 
     @cmpi_logging.trace_method
     def _get_capabilities_for_device(self, device):
-        """ Return capabilities fir given device. """
+        """ Return capabilities for given device. """
         if not self.pool_provider:
             self.pool_provider = self.provider_manager.get_provider_for_device(
                     device)
@@ -111,6 +107,21 @@ class LMI_LVStorageCapabilities(CapabilitiesProvider):
                     "ParityLayoutDefault",
                     None,
                     type="uint16")
+
+        if device.type == 'lvmvg':
+            caps['SupportedStorageElementTypes'] = \
+                [self.Values.SupportedStorageElementTypes.ThinlyProvisionedLimitlessStoragePool]
+        elif device.type == 'lvmthinpool':
+            caps['SupportedStorageElementTypes'] = \
+                [self.Values.SupportedStorageElementTypes.ThinlyProvisionedStorageExtent]
+        else:
+            # this should never happen
+            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
+                                  "Assertion failed: wrong device type: %s" % (device.type))
+
+        caps['ThinProvisionedClientSettableReserve'] = pywbem.Uint64(0)
+        caps['ThinProvisionedDefaultReserve'] = pywbem.Uint64(0)
+
         return caps
 
 
@@ -124,7 +135,7 @@ class LMI_LVStorageCapabilities(CapabilitiesProvider):
 
             Subclasses must override this method.
         """
-        for vg in self.storage.vgs:
+        for vg in self.storage.vgs + self.storage.thinpools:
             yield self._get_capabilities_for_device(vg)
 
     @cmpi_logging.trace_method
@@ -196,11 +207,6 @@ class LMI_LVStorageCapabilities(CapabilitiesProvider):
         device = storage.get_device_for_persistent_name(self.storage, path)
         if not device:
             return None
-        if not isinstance(device,
-                blivet.devices.LVMVolumeGroupDevice):
-            LOG().trace_warn("InstanceID %s is not LVMVolumeGroupDevice",
-                    instance_id)
-            return None
 
         return self._get_capabilities_for_device(device)
 
@@ -262,6 +268,14 @@ class LMI_LVStorageCapabilities(CapabilitiesProvider):
             class SettingType(object):
                 Default = pywbem.Uint16(2)
                 Goal = pywbem.Uint16(3)
+
+        class SupportedStorageElementTypes(object):
+            ThinlyProvisionedStorageVolume = pywbem.Uint16(5)
+            ThinlyProvisionedLogicalDisk = pywbem.Uint16(6)
+            ThinlyProvisionedAllocatedStoragePool = pywbem.Uint16(7)
+            ThinlyProvisionedQuotaStoragePool = pywbem.Uint16(8)
+            ThinlyProvisionedLimitlessStoragePool = pywbem.Uint16(9)
+            ThinlyProvisionedStorageExtent = pywbem.Uint16(32768)
 
 class LMI_LVElementCapabilities(BaseProvider):
     """

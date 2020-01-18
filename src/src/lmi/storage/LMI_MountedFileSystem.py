@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2013-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Synacek <jsynacek@redhat.com>
+#          Jan Safranek <jsafrane@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Python Provider for LMI_MountedFileSystem
@@ -34,6 +35,7 @@ from lmi.storage.SettingHelper import SettingHelper
 from lmi.storage.SettingManager import StorageSetting
 from lmi.storage.SettingProvider import SettingProvider, Setting
 import lmi.providers.cmpi_logging as cmpi_logging
+from lmi.storage.util import storage
 
 class LMI_MountedFileSystem(BaseProvider, SettingHelper):
     """Instrument the CIM class LMI_MountedFileSystem
@@ -107,7 +109,7 @@ class LMI_MountedFileSystem(BaseProvider, SettingHelper):
         else:
             if device is None:
                 raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "No such mounted device: " + spec)
-            if path not in blivet.util.get_mount_paths(spec):
+            if path not in storage.get_mount_paths(device):
                 raise not_mounted_ex
 
         model['InstanceID'] = self._create_instance_id(self._create_id(spec, path))
@@ -142,7 +144,7 @@ class LMI_MountedFileSystem(BaseProvider, SettingHelper):
                 model['FileSystemSpec'] = device.path
                 yield _yield_instance(env, model, keys_only)
             else:
-                for path in blivet.util.get_mount_paths(device.path):
+                for path in storage.get_mount_paths(device):
                     model['MountPointPath'] = path
                     model['FileSystemSpec'] = device.path
                     yield _yield_instance(env, model, keys_only)
@@ -196,7 +198,7 @@ class LMI_MountedFileSystem(BaseProvider, SettingHelper):
             if isinstance(device, blivet.devices.NoDevice):
                 yield self._get_setting_for_mount(device, device.format.mountpoint, setting_provider)
             else:
-                for path in blivet.util.get_mount_paths(device.path):
+                for path in storage.get_mount_paths(device):
                     yield self._get_setting_for_mount(device, path, setting_provider)
 
     @cmpi_logging.trace_method
@@ -224,7 +226,7 @@ class LMI_MountedFileSystem(BaseProvider, SettingHelper):
         else:
             if device is None:
                 return None
-            if path not in blivet.util.get_mount_paths(spec):
+            if path not in storage.get_mount_paths(device):
                 return None
 
         return self._get_setting_for_mount(device, path, setting_provider)

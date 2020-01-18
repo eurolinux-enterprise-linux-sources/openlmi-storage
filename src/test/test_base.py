@@ -31,6 +31,7 @@ import time
 import socket
 import Queue
 import threading
+import blivet
 
 class StorageTestBase(unittest.TestCase):
     """
@@ -410,6 +411,7 @@ class StorageTestBase(unittest.TestCase):
                 TheElement=raidname)
         self.assertEquals(ret, 0)
 
+
 def short_tests_only():
     """
         Returns True, if only short test should be executed, i.e.
@@ -418,3 +420,16 @@ def short_tests_only():
     if os.environ.get("LMI_STORAGE_SHORT_ONLY", None):
         return True
     return False
+
+def blivet_version(major, minor, patch):
+    """
+        Returns True, if installed blivet version is at least the given one.
+    """
+    ver = blivet.__version__.split('.')
+    if len(ver) > 3:
+        ver = ver[:3]
+    ver = map(int, ver)
+    while len(ver) < 3:
+        ver.append(0)
+    
+    return list(ver) >= list((major, minor, patch))

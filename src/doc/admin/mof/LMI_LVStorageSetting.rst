@@ -9,7 +9,7 @@ Subclass of :ref:`LMI_StorageSetting <LMI-StorageSetting>`
 
 This class defines characteristics of LMI_LVStorageExtent which is created or modified by CreateOrModifyElementFromStoragePool method in the LMI_StorageConfigurationService.
 
- Currently no properties are defined or supported, only simple Logical Volumes can be created. In future, this may be extended to support redundancy and stripping and thin volumes.
+Currently no properties are defined or supported, only simple Logical Volumes can be created. In future, this may be extended to support redundancy and stripping and thin volumes.
 
 
 Key properties

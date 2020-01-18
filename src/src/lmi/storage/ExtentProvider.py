@@ -242,6 +242,8 @@ class ExtentProvider(DeviceProvider):
 
         model['Primordial'] = self.get_primordial(device)
         model['Names'] = self.get_names(device)
+        if device.bus:
+            model['DeviceBusType'] = device.bus
 
         discriminator = self.get_discriminator(device)
         model['ExtentDiscriminator'] = pywbem.CIMProperty(

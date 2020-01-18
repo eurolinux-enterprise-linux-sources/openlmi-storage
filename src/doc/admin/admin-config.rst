@@ -27,26 +27,28 @@ Default configuration::
      Stderr=false
      DebugBlivet=false
 
-======= =================== ==================== ===========
-Section Option name         Default value        Desciption
-======= =================== ==================== ===========
-``CIM`` ``Namespace``       root/cimv2           Namespace where OpenLMI-Storage providers are registered.
-``CIM`` ``SystemClassName`` PG_ComputerSystem    Name of CIM_ComputerSystem class, which is used to represent the computer system. It will be used as ``SystemClassName`` property value of various classes.
-``Log`` ``Level``           ERROR                Chooses which messages are logged, either to CIMOM and (if configured) to standard error output. Available levels (sorted by severity) are:
+=========== =================== ==================== ===========
+Section     Option name         Default value        Desciption
+=========== =================== ==================== ===========
+``CIM``     ``Namespace``       root/cimv2           Namespace where OpenLMI-Storage providers are registered.
+``CIM``     ``SystemClassName`` PG_ComputerSystem    Name of CIM_ComputerSystem class, which is used to represent the computer system. It will be used as ``SystemClassName`` property value of various classes.
+``Log``     ``Level``           ERROR                Chooses which messages are logged, either to CIMOM and (if configured) to standard error output. Available levels (sorted by severity) are:
 
-                                                    * CRITICAL
-                                                    * ERROR
-                                                    * WARNING
-                                                    * INFO
-                                                    * DEBUG
-                                                    * TRACE_WARNING
-                                                    * TRACE_INFO
-                                                    * TRACE_VERBOSE
+                                                        * CRITICAL
+                                                        * ERROR
+                                                        * WARNING
+                                                        * INFO
+                                                        * DEBUG
+                                                        * TRACE_WARNING
+                                                        * TRACE_INFO
+                                                        * TRACE_VERBOSE
 
-                                                 Levels below INFO (= TRACE_WARNING, TRACE_INFO and DEBUG) are useful mainly for debugging and bug reporting.
-``Log`` ``Stderr``          false                Toggles sending of log messages to standard error output of the CIMOM.
-``Log`` ``DebugBlivet``     false                Toggles logging of detailed debug messages in Blivet.
-======= =================== ==================== ===========
+                                                     Levels below INFO (= TRACE_WARNING, TRACE_INFO and DEBUG) are useful mainly for debugging and bug reporting.
+``Log``     ``Stderr``          false                Toggles sending of log messages to standard error output of the CIMOM.
+``Log``     ``DebugBlivet``     false                Toggles logging of detailed debug messages in Blivet.
+``Storage`` ``Tempdir``         /tmp                 Path to temporary directory. The providers (usually running as root) need read/write access there.
+                                                     When SELinux or other security enhancement mechanism is used, **only** the provider should have read/write access to this directory.
+=========== =================== ==================== ===========
 
 Persistent setting
 ------------------

@@ -230,9 +230,9 @@ Local methods
 
 ``uint32`` **LMI_CreateFileSystem** (``uint16`` FileSystemType, ``string`` ElementName, :ref:`CIM_ConcreteJob <CIM-ConcreteJob>` Job, :ref:`CIM_FileSystemSetting <CIM-FileSystemSetting>` Goal, :ref:`CIM_StorageExtent[] <CIM-StorageExtent>` InExtents, :ref:`CIM_FileSystem <CIM-FileSystem>` TheElement)
 
-    Start a job to create a FileSystem on StorageExtents. If the operation completes successfully and did not require a long-running ConcreteJob, it will return 0. If 4096/0x1000 is returned, a ConcreteJob will be started to create the element. A Reference to the ConcreteJob will be returned in the output parameter Job. If any other value is returned, the job will not be started, and no action will be taken. 
+    Start a job to create a FileSystem on StorageExtents. If the operation completes successfully and did not require a long-running ConcreteJob, it will return 0. If 4096/0x1000 is returned, a ConcreteJob will be started to create the element. A Reference to the ConcreteJob will be returned in the output parameter Job. If any other value is returned, the job will not be started, and no action will be taken.
 
-    The parameter TheElement will contain a Reference to the FileSystem if this operation completed successfully. 
+    The parameter TheElement will contain a Reference to the FileSystem if this operation completed successfully.
 
     The StorageExtents to use is specified by the InExtents parameter.
 
@@ -368,7 +368,7 @@ Local methods
             
         
         *IN* ``uint32`` **WaitTime**
-            An integer that indicates the time (in seconds) that the provider must wait before deleting this FileSystem. If WaitTime is not zero, the method will create a job, if supported by the provider, and return immediately. If the provider does not support asynchronous jobs, there is a possibility that the client could time-out before the job is completed. 
+            An integer that indicates the time (in seconds) that the provider must wait before deleting this FileSystem. If WaitTime is not zero, the method will create a job, if supported by the provider, and return immediately. If the provider does not support asynchronous jobs, there is a possibility that the client could time-out before the job is completed.
 
             The combination of InUseOptions = '4' and WaitTime ='0' (the default) is interpreted as 'Wait (forever) until Quiescence, then Delete Filesystem' and will be performed asynchronously if possible.
 

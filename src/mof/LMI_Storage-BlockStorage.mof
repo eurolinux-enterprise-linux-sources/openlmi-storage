@@ -16,7 +16,7 @@ class LMI_MDRAIDStorageExtent : LMI_StorageExtent
 
 };
 
-[ Version("0.5.1"), Experimental, Description("This class represents Logical Volume devices on the managed system.")]
+[ Version("0.8.0"), Experimental, Description("This class represents Logical Volume devices on the managed system.")]
 class LMI_LVStorageExtent : LMI_StorageExtent
 {
     [Implemented(true), Override, Description (
@@ -25,6 +25,9 @@ class LMI_LVStorageExtent : LMI_StorageExtent
 
     [Implemented(true), Description("UUID of the Logical Volume.")]
     string UUID;
+
+    [Implemented(true)]
+    boolean ThinlyProvisioned;
 };
 
 [ Version("0.6.0"), Experimental, Description("This class represents Volume Groups. Space in Volume Groups "
@@ -124,12 +127,12 @@ class LMI_VGStoragePool : CIM_StoragePool
 
 };
 
-[ Version("0.5.1"), Experimental, Description (
+[ Version("0.8.0"), Experimental, Description (
        "This service allows the active management of a Storage Server. "
        "It allows jobs to be started for the creation, modification "
        "and deletion of storage objects (StoragePools, StorageVolumes "
        "and LogicalDisks)."
-       "\n\n For now, it supports Volume Group creation and modification (CreateOrModifyStoragePool), "
+       "\n\nFor now, it supports Volume Group creation and modification (CreateOrModifyStoragePool), "
        "allocation/modification of Logical Volume (CreateOrModifyElementFromStoragePool), "
        "Creation of MD RAID array () "
        "and destruction of all this (DeleteStoragePool, ReturnToStoragePool, ). "
@@ -155,14 +158,19 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
           "\nThe capability "
           "requirements that the Pool must support are defined "
           "using the Goal parameter. "
-          "\n This method supports renaming of a Volume Group and adding and removing StorageExtents to/from a Volume Group. "
+          "\nThis method supports renaming of a Volume Group and adding and removing StorageExtents to/from a Volume Group. "
+          "\nIf a device is being removed from a Volume Group, all its data are "
+          "automatically moved to any free Physical Volume automatically. "
+          "This can be lengthy operation! Error is reported "
+          "if there is no space for safe removal of the device. "
+          "No data is lost when removing a device from Volume Group."
           "\nIf 0 is "
           "returned, then the task completed successfully and the "
           "use of ConcreteJob was not required. If the task will "
           "take some time to complete, a ConcreteJob will be "
           "created and its reference returned in the output "
           "parameter Job. "
-          "\n This method automatically formats the StorageExtents added to a Volume Group as Physical Volumes." ),
+          "\nThis method automatically formats the StorageExtents added to a Volume Group as Physical Volumes." ),
        ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
           "4097", "4098..32767", "32768..65535" },
        Values { "Job Completed with No Error", "Not Supported",
@@ -217,7 +225,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
              "of the Volume Groups and are not listed in InExtents parameter "
              "are removed from the Volume Group. All Storage Extents, which "
              "are not members of the Volume Group and are listed in InExtents "
-             "parameter are added to tghe Volume Group."
+             "parameter are added to the Volume Group."
              "\nIf null, no extents are removed and/or added to to Volume Group." )]
       string InExtents[],
          [IN, OUT, Description (
@@ -284,7 +292,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
           "Return Value will be 4097/0x1001. Also, the output value "
           "of Size is set to the nearest possible size. "
           "\nThis method supports renaming or resizing of a Logical Volume."
-          "\n If 0 is "
+          "\nIf 0 is "
           "returned, the function completed successfully and no "
           "ConcreteJob instance was required. If 4096/0x1000 is "
           "returned, a ConcreteJob will be started to create the "
@@ -309,7 +317,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
          [IN, Description (
              "Enumeration indicating the type of element being "
              "created or modified. "
-             "\nOnly StorageElement is supported now. "
+             "\nOnly StorageExtent and ThinlyProvisionedStorageVolume are supported now. "
              "\nIf the input parameter "
              "TheElement is specified when the operation is a "
              "\'modify\', this type value must match the type of "
@@ -334,7 +342,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
              "appropriate to the element being created. If not "
              "NULL, this parameter will supply a new Goal when "
              "modifying an existing element."
-             "\n As we support only Volume Groups and simple Logical "
+             "\nAs we support only Volume Groups and simple Logical "
              "Volumes for now, no redundancy or stripping may be "
              "specified. Null is the safest option here.")]
       CIM_ManagedElement REF Goal,
@@ -367,14 +375,14 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
           "the desired size of the element and must match size of all input StorageVolumes combined in the RAID. "
           "Use null to avoid this calculation. "
           "As an output parameter, it specifies the size achieved. "
-          "\n The desired Settings for the element "
+          "\nThe desired Settings for the element "
           "are specified by the Goal parameter. "
-          "\n If 0 is returned, the function completed successfully and no "
+          "\nIf 0 is returned, the function completed successfully and no "
           "ConcreteJob instance was required. If 4096/0x1000 is "
           "returned, a ConcreteJob will be started to create the "
           "element. The Job\'s reference will be returned in the "
           "output parameter Job."
-          "\n This method does not support MD RAID modification for now."
+          "\nThis method does not support MD RAID modification for now."
         ),
        ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
           "4097", "4098..32767", "32768..65535" },
@@ -395,7 +403,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
          [Required, IN, Description (
              "Enumeration indicating the type of element being "
              "created or modified. "
-             "\n Only StorageExtent is supported now."
+             "\nOnly StorageExtent is supported now."
              "\nIf the input parameter "
              "TheElement is specified when the operation is a "
              "\'modify\', this type value must match the type of "
@@ -450,8 +458,8 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
     [Description("Create or modify MD RAID array. This method is shortcut to CreateOrModifyElementFromElements "
         "with the right Goal. Lazy applications can use this method to create or modify MD RAID with the right level, "
         "without calculation of the Goal setting."
-        "\n Either Level or Goal must be specified. If both are specified, they must match."
-        "\n RAID modification is not yet supported."),
+        "\nEither Level or Goal must be specified. If both are specified, they must match."
+        "\nRAID modification is not yet supported."),
        ValueMap { "0", "1", "2", "3", "4", "5", "6", "..", "4096",
           "4097", "4098..32767", "32768..65535" },
        Values { "Completed with No Error", "Not Supported",
@@ -468,7 +476,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
         [IN, Description("Requested MD RAID name, i.e. if /dev/md/my_name "
             "is created, the ElementName should be set to \"my_name\". "
             "If this parameter is not provided, implementation will choose on "
-            "it's own when creating the device.")]
+            "its own when creating the device.")]
         string ElementName,
 
         [IN, Description("List of CIM_StorageExtents which should be part of the RAID. "
@@ -481,7 +489,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
 
         [IN, OUT, Description("On input: MD RAID device to modify. Do not use "
             "this parameter when creating new array."
-            "\n On output: the created MD RAID.")]
+            "\nOn output: the created MD RAID.")]
         LMI_MDRAIDStorageExtent REF TheElement,
 
         [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
@@ -525,8 +533,8 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
     uint32 CreateOrModifyVG(
         [IN, Description("Requested volume group name. "
             "If this parameter is not provided, implementation will choose on "
-            "it's own when creating the device."
-            "\n When modifying a Volume Group, the VG will be renamed to this name."
+            "its own when creating the device."
+            "\nWhen modifying a Volume Group, the VG will be renamed to this name."
             )]
         string ElementName,
 
@@ -535,8 +543,8 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
         LMI_VGStorageSetting REF Goal,
 
         [IN, Description("List of all Physical Volumes of the VG."
-            "\n When creating a VG, these devices will be PVs of the VG."
-            "\n When modifying a VG, this is list of new PVs of the VG. Any "
+            "\nWhen creating a VG, these devices will be PVs of the VG."
+            "\nWhen modifying a VG, this is new list of PVs of the VG. Any "
             "existing PVs, which are not listed in InExtents, will be removed "
             "from the VG. Any devices, which are listed in InExtents and are "
             "not PVs of the VG will be added to the VG."
@@ -545,18 +553,83 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
 
         [IN, OUT, Description("On input: VG to modify. Do not use this parameter "
             "when creating a VG."
-            "\n On output: the created or modified VG.")]
+            "\nOn output: the created or modified VG.")]
         LMI_VGStoragePool REF Pool,
 
         [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
         CIM_ConcreteJob REF Job,
 
         [IN(False), OUT, Description (
-             "Size of the volume group." ),
+             "Size of the volume group."),
           Units ( "Bytes" ),
           PUnit ( "byte" )]
       uint64 Size
 
+    );
+
+    [Description("Create or modify Thin Pool. This method is shortcut to CreateOrModifyStoragePool "
+        "with the right Goal. Lazy applications can use this method to create or modify thin pools, "
+        "without calculation of the Goal setting."),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6", "4096",
+          "4097" },
+       Values { "Job Completed with No Error", "Not Supported",
+          "Unknown", "Timeout", "Failed", "Invalid Parameter",
+          "In Use",
+          "Method Parameters Checked - Job Started",
+          "Size Not Supported", "Method Reserved"}]
+    uint32 CreateOrModifyThinPool(
+       [IN, Description(
+            "Name of the thin pool. If this parameter is not provided, "
+            "implementation will choose on its own when creating the device.")]
+       string ElementName,
+
+       [IN, Description("Currently not supported.")]
+       LMI_VGStorageSetting REF Goal,
+
+       [IN, Description("The volume group from which the thin pool should be allocated.")]
+       LMI_VGStoragePool REF InPool,
+
+       [IN, OUT, Description("On input: thin pool to modify. Do not use this parameter "
+           "when creating a thin pool."
+           "\nOn output: the created or modified thin pool.")]
+       LMI_VGStoragePool REF Pool,
+
+       [IN, OUT, Description(
+           "Physical size of the thin pool. The pool can store at most Size bytes of data."
+           "\nOn input, only used when creating a ThinPool." ),
+           Units ( "Bytes" ),
+           PUnit ( "byte" )]
+       uint64 Size,
+
+       [IN(false), OUT, Description("Reference to the job (may be null if job completed).")]
+       CIM_ConcreteJob REF Job
+    );
+
+    uint32 CreateOrModifyThinLV(
+        [IN, Description("Requested Thin Logical Volume name. "
+            "If this parameter is not provided, implementation will choose on "
+            "it's own when creating the device."
+            )]
+        string ElementName,
+
+        [IN, Description("Used only when creating a thin volume. This parameter specifies from which thinpool should be the thin volume allocated.")]
+        LMI_VGStoragePool REF ThinPool,
+
+        [IN, OUT, Description("On input: LV to modify. Do not use this parameter "
+            "when creating a LV."
+            "\nOn output: the created or modified LV.")]
+        LMI_LVStorageExtent REF TheElement,
+
+        [IN, OUT, Description(
+            "Requested thin LV size. It will be rounded to multiples of VG's ExtentSize."
+            "\nIn contrast to the size of a thin pool, this size is logical. It can be much "
+            "higher than the physical size of the underlying storage."
+            "\nModification is not supported."),
+            Units("Bytes")]
+        uint64 Size,
+
+        [IN(false), OUT, Description("Reference to the job (may be null if job completed).")]
+        CIM_ConcreteJob REF Job
     );
 
     [Implemented(true),
@@ -573,14 +646,14 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
     uint32 CreateOrModifyLV(
         [IN, Description("Requested Logical Volume name. "
             "If this parameter is not provided, implementation will choose on "
-            "it's own when creating the device."
-            "\n When modifying a LV, the LV will be renamed to this name."
+            "its own when creating the device."
+            "\nWhen modifying a LV, the LV will be renamed to this name."
             )]
         string ElementName,
 
-        [IN, Description("Requested LV size. It will be rounded to multiples of VG's ExtentSize."
-            "\n When used when modifying a LV, this LV will be resized to this size."
-            "\n Only growing of LVs is supported, shrinking is not supported now."),
+        [IN, OUT, Description("Requested LV size. It will be rounded to multiples of VG's ExtentSize."
+            "\nWhen used when modifying a LV, this LV will be resized to this size."
+            "\nOnly growing of LVs is supported, shrinking is not supported now."),
           Units("Bytes")]
         uint64 Size,
 
@@ -593,7 +666,7 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
 
         [IN, OUT, Description("On input: LV to modify. Do not use this parameter "
             "when creating a LV."
-            "\n On output: the created or modified LV.")]
+            "\nOn output: the created or modified LV.")]
         LMI_LVStorageExtent REF TheElement,
 
         [IN(False), OUT, Description("Reference to the job (may be null if job completed).")]
@@ -649,6 +722,32 @@ class LMI_StorageConfigurationService : CIM_StorageConfigurationService
              "Reference to the element to return to the StoragePool."
               )]
       LMI_LVStorageExtent REF TheElement);
+
+      [Implemented(true), Experimental, Description (
+          "This method requests that the system rescan SCSI devices "
+          "for changes in their configuration. "
+          "This method may also be used "
+          "on a storage appliance to force rescanning of attached "
+          "SCSI devices. \n"
+          "\n"
+          "This operation can be disruptive.\n\n"
+          "The method is LMI version of DMTF's ScsiScan(), just with '4096' as "
+          "'Method Parameters Checked - Job Started' return value. Also, "
+          "the method parameters were trimmed, we may extend it to support "
+          "complete DMTF ScsiScan parameters."),
+       ValueMap { "0", "1", "2", "3", "4", "5", "6..4095", "4096",
+          "4097", "4098", "4099", "4100", "..", "32768..65535" },
+       Values { "Success", "Not Supported", "Unknown", "Timeout",
+          "Failed", "Invalid Parameter", "DMTF Reserved",
+          "Method Parameters Checked - Job Started", "Invalid Initiator",
+          "No matching target found", "No matching LUs found",
+          "Prohibited by name binding configuration",
+          "DMTF Reserved", "Vendor Specific" }]
+   uint32 LMI_ScsiScan(
+         [OUT, Description (
+             "Reference to the job (may be null if job completed)."
+              )]
+      CIM_ConcreteJob REF Job);
 
     [ Implemented(true) ] uint16 EnabledDefault;
     [ Implemented(true) ] uint16 EnabledState;
@@ -727,7 +826,7 @@ class LMI_VGStorageSetting : LMI_StorageSetting
 
 [ Version("0.5.1"), Experimental, Description("This class defines characteristics of LMI_LVStorageExtent which is created or modified by "
     "CreateOrModifyElementFromStoragePool method in the LMI_StorageConfigurationService."
-    "\n Currently no properties are defined or supported, only simple Logical Volumes can be created. "
+    "\nCurrently no properties are defined or supported, only simple Logical Volumes can be created. "
     "In future, this may be extended to support redundancy and stripping and thin volumes.")]
 class LMI_LVStorageSetting : LMI_StorageSetting
 {
@@ -736,17 +835,17 @@ class LMI_LVStorageSetting : LMI_StorageSetting
 
 [ Version("0.5.1"), Experimental, Description("This class defines characteristics of LMI_MDRAIDStorageExtent which is created or modified by "
     "CreateOrModifyElementFromElements method in the LMI_StorageConfigurationService."
-    "\n Currently no additional properties are necessary in this class, redundancy and stripping is defined "
+    "\nCurrently no additional properties are necessary in this class, redundancy and stripping is defined "
     "by DataRedundancy, PackageRedundancy and ExtentStripeLength."
-    "\n In future, this class may introduce MD RAID properties like metadata format, additional parity layouts etc."
+    "\nIn future, this class may introduce MD RAID properties like metadata format, additional parity layouts etc."
     )]
 class LMI_MDRAIDStorageSetting : LMI_StorageSetting
 {
 };
 
-[ Version("0.7.0"), Experimental, Description("This class represents capability of LMI_StorageConfigurationService to create Volume Groups. "
+[ Version("0.8.0"), Experimental, Description("This class represents capability of LMI_StorageConfigurationService to create Volume Groups. "
     "It describes, which properties and which values can be used in LMI_VGStorageSetting."
-    "\n There are no additional properties for now."
+    "\nThere are no additional properties for now."
     )]
 class LMI_VGStorageCapabilities : CIM_StorageCapabilities
 {
@@ -757,11 +856,11 @@ class LMI_VGStorageCapabilities : CIM_StorageCapabilities
     uint32 CreateVGStorageSetting(
         [IN, Description("List of devices, from which the new Volume Group will be created. "
             "The created LMI_VGStorageSetting will take redundancy and striping of these devices into account. "
-            "\n That means, to create volume group on top of two devices, the application passes "
+            "\nThat means, to create volume group on top of two devices, the application passes "
             "InExtents=(FirstExtent, SecondExtent). Resulting LMI_VGStorageSetting will have "
             "DataRedundancy, PackageRedundancy and ExtentStripeLength as minimum of both input extents, "
             "indicating that the created Volume Group does not add any additional redundancy or stripping."
-            "\n For example if the application wants to create volume group on top of two RAID1 devices, it passes "
+            "\nFor example if the application wants to create volume group on top of two RAID1 devices, it passes "
             "InExtents = (FirstRAID1Extent, SecondRAID1Extent). Resulting LMI_MDRAIDStorageSetting will have "
             "DataRedundancy, PackageRedundancy and ExtentStripeLength as the minimum of "
             "the first and the second RAID1 extents."
@@ -777,6 +876,13 @@ class LMI_VGStorageCapabilities : CIM_StorageCapabilities
         PUnit ( "byte" )]
     uint64 ExtentSizeDefault;
 
+    [Description("Support for allocation of thinly provisioned StoragePools."),
+        ValueMap {"5", "6", "7", "8", "9", "32768"},
+        Values {"ThinlyProvisionedStorageVolume", "ThinlyProvisionedLogicalDisk",
+                "ThinlyProvisionedAllocatedStoragePool", "ThinlyProvisionedQuotaStoragePool",
+                "ThinlyProvisionedLimitlessStoragePool", "ThinlyProvisionedStorageExtent"}]
+    uint16 SupportedStorageElementTypes[];
+
     [ Implemented(true) ] string ElementName;
     [ Implemented(true) ] uint16 DataRedundancyDefault;
     [ Implemented(true) ] uint16 DataRedundancyMax;
@@ -787,12 +893,13 @@ class LMI_VGStorageCapabilities : CIM_StorageCapabilities
     [ Implemented(true) ] uint16 PackageRedundancyDefault;
     [ Implemented(true) ] uint16 PackageRedundancyMax;
     [ Implemented(true) ] uint16 PackageRedundancyMin;
-
+    [ Implemented(true) ] uint64 ThinProvisionedClientSettableReserve;
+    [ Implemented(true) ] uint64 ThinProvisionedDefaultReserve;
 };
 
 [ Version("0.5.1"), Experimental, Description("This class represents capability of LMI_StorageConfigurationService to create MD RAID arrays. "
     "It describes, which properties and which values can be used in LMI_MDRAIDStorageSetting."
-    "\n There are no additional properties for now."
+    "\nThere are no additional properties for now."
     )]
 class LMI_MDRAIDStorageCapabilities : CIM_StorageCapabilities
 {
@@ -809,7 +916,7 @@ class LMI_MDRAIDStorageCapabilities : CIM_StorageCapabilities
 
         [IN, Description("List of devices, from which the new device will be created. "
             "The created LMI_MDRAIDStorageSetting will take redundancy and striping of these devices into account. "
-            "\n For example, if the application wants to create RAID0 on top of two RAID1 devices, it passes "
+            "\nFor example, if the application wants to create RAID0 on top of two RAID1 devices, it passes "
             "InExtents = (FirstRAID1Extent, SecondRAID1Extent) and Level=0. Resulting LMI_MDRAIDStorageSetting will have "
             "DataRedundancy and PackageRedundancy as the minimum of "
             "the first and the second RAID1 extents and ExtentStripeLength will be 2 to indicate RAID0 with two devices."
@@ -832,11 +939,11 @@ class LMI_MDRAIDStorageCapabilities : CIM_StorageCapabilities
 };
 
 
-[ Version("0.5.1"), Experimental, Description("This class represents capabilities of LMI_StorageConfigurationService to create Logical Volumes. "
+[ Version("0.8.0"), Experimental, Description("This class represents capabilities of LMI_StorageConfigurationService to create Logical Volumes. "
     "It describes, which properties and which values can be used in LMI_LVStorageSetting."
-    "\n Each LMI_VGStoragePool has one instance of this class attached, which describes what kind of Logical Volumes can "
+    "\nEach LMI_VGStoragePool has one instance of this class attached, which describes what kind of Logical Volumes can "
     "be allocated from it. As only basic Logical Volumes are supported, it basically only represents underlying redundancy and stripping"
-    "\n There are no additional properties for now."
+    "\nThere are no additional properties for now."
     )]
 class LMI_LVStorageCapabilities : CIM_StorageCapabilities
 {
@@ -851,6 +958,13 @@ class LMI_LVStorageCapabilities : CIM_StorageCapabilities
         [IN(False), OUT, Description("Created LMI_StorageSetting.")]
         LMI_StorageSetting REF Setting);
 
+    [Description("Support for allocation of thinly provisioned StoragePools."),
+        ValueMap {"5", "6", "7", "8", "9", "32768"},
+        Values {"ThinlyProvisionedStorageVolume", "ThinlyProvisionedLogicalDisk",
+                "ThinlyProvisionedAllocatedStoragePool", "ThinlyProvisionedQuotaStoragePool",
+                "ThinlyProvisionedLimitlessStoragePool", "ThinlyProvisionedStorageExtent"}]
+    uint16 SupportedStorageElementTypes[];
+
     [ Implemented(true) ] string ElementName;
     [ Implemented(true) ] uint16 DataRedundancyDefault;
     [ Implemented(true) ] uint16 DataRedundancyMax;
@@ -861,6 +975,8 @@ class LMI_LVStorageCapabilities : CIM_StorageCapabilities
     [ Implemented(true) ] uint16 PackageRedundancyDefault;
     [ Implemented(true) ] uint16 PackageRedundancyMax;
     [ Implemented(true) ] uint16 PackageRedundancyMin;
+    [ Implemented(true) ] uint64 ThinProvisionedClientSettableReserve;
+    [ Implemented(true) ] uint64 ThinProvisionedDefaultReserve;
 };
 
 
@@ -909,6 +1025,11 @@ class LMI_LVElementCapabilities : CIM_ElementCapabilities
 
 [ Version("0.5.1"), Experimental ]
 class LMI_LVAllocatedFromStoragePool : CIM_AllocatedFromStoragePool
+{
+};
+
+[ Version("0.8.0"), Experimental ]
+class LMI_VGAllocatedFromStoragePool : CIM_AllocatedFromStoragePool
 {
 };
 
@@ -1089,7 +1210,7 @@ class LMI_BlockStatisticsService : CIM_BlockStatisticsService
         CIM_BlockStatisticsManifestCollection REF ManifestCollection,
         [IN, Description (
             "Specifies the format of the Statistics output "
-            "parameter. \n"
+            "parameter.\n"
             "- CSV = Comma Separated Values." ),
         ValueMap { "0", "1", "2", "..", "0x8000.." },
         Values { "Unknown", "Other", "CSV", "DMTF Reserved",

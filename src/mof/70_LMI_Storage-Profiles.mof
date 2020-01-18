@@ -6,8 +6,9 @@ instance of PG_ProviderProfileCapabilities
     RegisteredProfile = 0;
     OtherRegisteredProfile = "OpenLMI-Storage";
     OtherProfileOrganization = "OpenLMI";
-    ProfileVersion = "0.6.0";
+    ProfileVersion = "0.8.0";
     RegisteredSubProfiles = {
+        0,
         0,
         0,
         0,
@@ -20,7 +21,8 @@ instance of PG_ProviderProfileCapabilities
         "Extent Composition",
         "File Storage",
         "Job Control",
-        "Block Server Performance"
+        "Block Server Performance",
+        "Disk Drive Lite"
     };
 
     SubprofileVersions = {
@@ -28,10 +30,12 @@ instance of PG_ProviderProfileCapabilities
         "1.5",
         "1.4",
         "1.5",
+        "1.5",
         "1.5"
     };
 
     OtherSubProfileOrganizations = {
+        "SNIA",
         "SNIA",
         "SNIA",
         "SNIA",
@@ -75,6 +79,7 @@ instance of PG_ProviderProfileCapabilities
         "LMI_BlockStatisticsManifestCollection",
         "LMI_BlockStatisticsManifest",
         "LMI_BlockStatisticsService",
-        "LMI_BlockStatisticsCapabilities"
+        "LMI_BlockStatisticsCapabilities",
+        "LMI_MediaPresent"
     };
 };

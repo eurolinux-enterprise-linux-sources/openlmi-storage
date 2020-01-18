@@ -9,7 +9,7 @@ Subclass of :ref:`CIM_StorageCapabilities <CIM-StorageCapabilities>`
 
 This class represents capability of LMI_StorageConfigurationService to create Volume Groups. It describes, which properties and which values can be used in LMI_VGStorageSetting.
 
- There are no additional properties for now.
+There are no additional properties for now.
 
 
 Key properties
@@ -69,11 +69,39 @@ Local properties
     DataRedundancyDefault describes the default number of complete copies of data that can be maintained. Examples would be RAID 5 where 1 copy is maintained and RAID 1 where 2 or more copies are maintained. Possible values are 1 to n. The bounds for the redundancy (max and min) are defined by DataRedundancyMax and DataRedundancyMin.
 
     
+.. _LMI-VGStorageCapabilities-SupportedStorageElementTypes:
+
+``uint16[]`` **SupportedStorageElementTypes**
+
+    Support for allocation of thinly provisioned StoragePools.
+
+    
+    ======== =====================================
+    ValueMap Values                               
+    ======== =====================================
+    5        ThinlyProvisionedStorageVolume       
+    6        ThinlyProvisionedLogicalDisk         
+    7        ThinlyProvisionedAllocatedStoragePool
+    8        ThinlyProvisionedQuotaStoragePool    
+    9        ThinlyProvisionedLimitlessStoragePool
+    32768    ThinlyProvisionedStorageExtent       
+    ======== =====================================
+    
 .. _LMI-VGStorageCapabilities-NoSinglePointOfFailureDefault:
 
 ``boolean`` **NoSinglePointOfFailureDefault**
 
     Indicates the default value for the NoSinglePointOfFailure property.
+
+    
+.. _LMI-VGStorageCapabilities-ThinProvisionedClientSettableReserve:
+
+``uint64`` **ThinProvisionedClientSettableReserve**
+
+    
+.. _LMI-VGStorageCapabilities-ThinProvisionedDefaultReserve:
+
+``uint64`` **ThinProvisionedDefaultReserve**
 
     
 .. _LMI-VGStorageCapabilities-ExtentStripeLengthDefault:
@@ -127,9 +155,9 @@ Local methods
         *IN* :ref:`CIM_StorageExtent[] <CIM-StorageExtent>` **InExtents**
             List of devices, from which the new Volume Group will be created. The created LMI_VGStorageSetting will take redundancy and striping of these devices into account. 
 
-             That means, to create volume group on top of two devices, the application passes InExtents=(FirstExtent, SecondExtent). Resulting LMI_VGStorageSetting will have DataRedundancy, PackageRedundancy and ExtentStripeLength as minimum of both input extents, indicating that the created Volume Group does not add any additional redundancy or stripping.
+            That means, to create volume group on top of two devices, the application passes InExtents=(FirstExtent, SecondExtent). Resulting LMI_VGStorageSetting will have DataRedundancy, PackageRedundancy and ExtentStripeLength as minimum of both input extents, indicating that the created Volume Group does not add any additional redundancy or stripping.
 
-             For example if the application wants to create volume group on top of two RAID1 devices, it passes InExtents = (FirstRAID1Extent, SecondRAID1Extent). Resulting LMI_MDRAIDStorageSetting will have DataRedundancy, PackageRedundancy and ExtentStripeLength as the minimum of the first and the second RAID1 extents.
+            For example if the application wants to create volume group on top of two RAID1 devices, it passes InExtents = (FirstRAID1Extent, SecondRAID1Extent). Resulting LMI_MDRAIDStorageSetting will have DataRedundancy, PackageRedundancy and ExtentStripeLength as the minimum of the first and the second RAID1 extents.
 
             
         
@@ -157,9 +185,9 @@ Inherited properties
 | ``uint16`` :ref:`ElementType <CIM-StorageCapabilities-ElementType>`
 | ``uint16`` :ref:`DeltaReservationMin <CIM-StorageCapabilities-DeltaReservationMin>`
 | ``uint16`` :ref:`DeltaReservationDefault <CIM-StorageCapabilities-DeltaReservationDefault>`
-| ``uint16`` :ref:`DeltaReservationMax <CIM-StorageCapabilities-DeltaReservationMax>`
 | ``uint16[]`` :ref:`AvailableInterconnectType <CIM-StorageCapabilities-AvailableInterconnectType>`
 | ``uint16[]`` :ref:`AvailableFormFactorType <CIM-StorageCapabilities-AvailableFormFactorType>`
+| ``uint16`` :ref:`DeltaReservationMax <CIM-StorageCapabilities-DeltaReservationMax>`
 | ``uint64`` :ref:`UserDataStripeDepthDefault <CIM-StorageCapabilities-UserDataStripeDepthDefault>`
 
 Inherited methods

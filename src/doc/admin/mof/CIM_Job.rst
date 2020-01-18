@@ -249,7 +249,6 @@ Local methods
 
 ``uint32`` **KillJob** (``boolean`` DeleteOnKill)
 
-    **Deprecated!** 
     KillJob is being deprecated because there is no distinction made between an orderly shutdown and an immediate kill. CIM_ConcreteJob.RequestStateChange() provides 'Terminate' and 'Kill' options to allow this distinction. 
 
     A method to kill this job and any underlying processes, and to remove any 'dangling' associations.

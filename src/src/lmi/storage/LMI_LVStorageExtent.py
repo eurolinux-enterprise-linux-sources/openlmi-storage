@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Module for LMI_LVStorageExtent class.
@@ -56,17 +57,30 @@ class LMI_LVStorageExtent(ExtentProvider, SettingHelper):
             Returns True, if this class is provider for given Anaconda
             StorageDevice class.
         """
-        if  isinstance(device,
-                    blivet.devices.LVMLogicalVolumeDevice):
+        # check for LVMThinPoolDevice first, see #1017752
+        if not isinstance(device, blivet.devices.LVMThinPoolDevice) and \
+           isinstance(device, blivet.devices.LVMLogicalVolumeDevice):
             return True
         return False
+
+    @cmpi_logging.trace_method
+    def get_status(self, device):
+        """
+            Returns OperationalStatus for given LV.
+        """
+        status = set(super(LMI_LVStorageExtent, self).get_status(device))
+        if not device.status:
+            # The LV is deactivated
+            status.add(self.Values.OperationalStatus.Stopped)
+            status.discard(self.Values.OperationalStatus.OK)
+        return list(status)
 
     @cmpi_logging.trace_method
     def enumerate_devices(self):
         """
             Enumerate all StorageDevices, that this provider provides.
         """
-        for device in self.storage.lvs:
+        for device in self.storage.lvs + self.storage.thinlvs:
             yield device
 
     @cmpi_logging.trace_method
@@ -84,6 +98,17 @@ class LMI_LVStorageExtent(ExtentProvider, SettingHelper):
             device = self._get_device(model)
 
         model['UUID'] = device.uuid
+        if isinstance(device, blivet.devices.LVMThinLogicalVolumeDevice):
+            model['ThinlyProvisioned'] = True
+        else:
+            model['ThinlyProvisioned'] = False
+
+        if not device.status:
+            # Inactive logical volumes don't have BlockSize and NumberOfBlocks
+            # from super.get_instance. We must lie about the BlockSize...
+            model['BlockSize'] = pywbem.Uint64(1)
+            model['NumberOfBlocks'] = pywbem.Uint64(
+                storage.from_blivet_size(device.size))
 
         return model
 
@@ -106,7 +131,7 @@ class LMI_LVStorageExtent(ExtentProvider, SettingHelper):
             This method returns iterable with all instances of LMI_*Setting
             as Setting instances.
         """
-        for lv in self.storage.lvs:
+        for lv in self.storage.lvs + self.storage.thinlvs:
             yield self._get_setting_for_device(lv, setting_provider)
 
     @cmpi_logging.trace_method
@@ -124,11 +149,6 @@ class LMI_LVStorageExtent(ExtentProvider, SettingHelper):
         device = storage.get_device_for_persistent_name(self.storage, path)
         if not path:
             return None
-        if not isinstance(device,
-                blivet.devices.LVMLogicalVolumeDevice):
-            LOG().trace_warn("InstanceID %s is not LVMLogicalVolumeDevice",
-                    instance_id)
-            return None
         return self._get_setting_for_device(device, setting_provider)
 
     @cmpi_logging.trace_method
@@ -143,11 +163,6 @@ class LMI_LVStorageExtent(ExtentProvider, SettingHelper):
             return None
         device = storage.get_device_for_persistent_name(self.storage, path)
         if not device:
-            return None
-        if not isinstance(device,
-                blivet.devices.LVMLogicalVolumeDevice):
-            LOG().trace_warn("InstanceID %s is not LVMLogicalVolumeDevice",
-                    instance_id)
             return None
         return self.get_name_for_device(device)
 
@@ -172,6 +187,7 @@ class LMI_LVStorageExtent(ExtentProvider, SettingHelper):
                 'PackageRedundancyMax' : pywbem.Uint16,
                 'PackageRedundancyMin' : pywbem.Uint16,
                 'ParityLayout' : pywbem.Uint16,
+                'ThinProvisionedPoolType' : pywbem.Uint16,
         }
 
     @cmpi_logging.trace_method

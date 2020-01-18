@@ -11,7 +11,7 @@ DiskPartitionConfigurationService provides methods for clients to configure Disk
 
 Any CIM_StorageExtent can be partitioned, but it's strongly recommended to partition only disks.
 
- Several partition styles are supported, see LMI_DiskPartitionConfigurationCapabilities instances. GPT partition style is strongly recommended. While MS-DOS (MBR) style partitions are fully supported, creation and modification of logical partitions require non-trivial calculations and should be avoided unless the application really knows what it is doing.
+Several partition styles are supported, see LMI_DiskPartitionConfigurationCapabilities instances. GPT partition style is strongly recommended. While MS-DOS (MBR) style partitions are fully supported, creation and modification of logical partitions require non-trivial calculations and should be avoided unless the application really knows what it is doing.
 
 
 Key properties
@@ -48,7 +48,7 @@ Local methods
 
 ``uint32`` **CreateOrModifyPartition** (:ref:`CIM_StorageExtent <CIM-StorageExtent>` extent, ``uint64`` StartingAddress, ``uint64`` EndingAddress, ``string`` DeviceFileName, :ref:`CIM_GenericDiskPartition <CIM-GenericDiskPartition>` Partition)
 
-    This method creates a new partition if the Partition parameter is null or modifies the partition specified. If the starting and ending address parameters are null, the resulting partition will occupy the entire underlying extent. If the starting address is non-null and the ending address is null, the resulting partition will extend to the end of the underlying extent. 
+    This method creates a new partition if the Partition parameter is null or modifies the partition specified. If the starting and ending address parameters are null, the resulting partition will occupy the entire underlying extent. If the starting address is non-null and the ending address is null, the resulting partition will extend to the end of the underlying extent.
 
     
 

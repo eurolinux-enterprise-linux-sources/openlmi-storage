@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 # -*- coding: utf-8 -*-
 """
 Module for LMI_LVAllocatedFromStoragePool class.
@@ -47,12 +48,15 @@ class LMI_LVAllocatedFromStoragePool(BaseProvider):
         """
         model.path.update({'Dependent': None, 'Antecedent': None})
 
-        for device in self.storage.lvs:
+        for device in self.storage.lvs + self.storage.thinlvs:
             lvprovider = self.provider_manager.get_provider_for_device(device)
             if not lvprovider:
                 raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                         "Cannot find provider for device " + device.path)
-            vg = device.vg
+            if isinstance(device, blivet.devices.LVMThinLogicalVolumeDevice):
+                vg = device.pool
+            else:
+                vg = device.vg
             vgprovider = self.provider_manager.get_provider_for_device(vg)
             if not vgprovider:
                 raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
@@ -60,6 +64,7 @@ class LMI_LVAllocatedFromStoragePool(BaseProvider):
 
             model['Dependent'] = lvprovider.get_name_for_device(device)
             model['Antecedent'] = vgprovider.get_name_for_device(vg)
+
             if keys_only:
                 yield model
             else:
@@ -86,14 +91,7 @@ class LMI_LVAllocatedFromStoragePool(BaseProvider):
             raise pywbem.CIMError(pywbem.CIM_ERR_NOT_FOUND,
                     "Cannot find Antecedent device")
 
-        if not isinstance(device,
-                    blivet.devices.LVMLogicalVolumeDevice):
-            raise pywbem.CIMError(pywbem.CIM_ERR_NOT_FOUND,
-                    "Dependend device is not logical volume: " + device.path)
-        if not isinstance(vg, blivet.devices.LVMVolumeGroupDevice):
-            raise pywbem.CIMError(pywbem.CIM_ERR_NOT_FOUND,
-                    "Antecedent device is not volume vroup: " + vg.path)
-        if vg != device.vg:
+        if vg != device.vg and not device.vg in vg.parents:
             raise pywbem.CIMError(pywbem.CIM_ERR_NOT_FOUND,
                     "Antecedent is not related to Dependent device")
 

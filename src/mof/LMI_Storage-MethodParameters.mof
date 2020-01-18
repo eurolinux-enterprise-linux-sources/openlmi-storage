@@ -51,10 +51,25 @@ class __MethodParameters_CreateOrModifyVG
     uint64 Size;
 };
 
+[Association, Experimental, Version("0.8.0")]
+class __MethodParameters_CreateOrModifyThinPool
+{
+    LMI_VGStoragePool REF Pool;
+    uint64 Size;
+};
+
 [Association, Experimental, Version("0.5.3")]
 class __MethodParameters_CreateOrModifyLV
 {
     LMI_LVStorageExtent REF TheElement;
+    uint64 Size;
+};
+
+[Association, Experimental, Version("0.8.0")]
+class __MethodParameters_CreateOrModifyThinLV
+{
+    LMI_LVStorageExtent REF TheElement;
+    uint64 Size;
 };
 
 [Association, Experimental, Version("0.5.3")]
@@ -128,6 +143,10 @@ class __MethodParameters_CloseEncryptionFormat
     LMI_EncryptionFormat REF Format;
 };
 
+[Association, Experimental, Version("0.8.0")]
+class __MethodParameters_LMI_ScsiScan
+{
+};
 
 
 
@@ -185,8 +204,20 @@ class __MethodParameters_CreateOrModifyVG_Result : __MethodParameters_CreateOrMo
     uint32 __ReturnValue;
 };
 
-[Association, Experimental, Version("0.5.3")]
+[Association, Experimental, Version("0.8.0")]
+class __MethodParameters_CreateOrModifyThinPool_Result : __MethodParameters_CreateOrModifyThinPool
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.8.0")]
 class __MethodParameters_CreateOrModifyLV_Result : __MethodParameters_CreateOrModifyLV
+{
+    uint32 __ReturnValue;
+};
+
+[Association, Experimental, Version("0.8.0")]
+class __MethodParameters_CreateOrModifyThinLV_Result : __MethodParameters_CreateOrModifyThinLV
 {
     uint32 __ReturnValue;
 };
@@ -256,3 +287,10 @@ class __MethodParameters_CloseEncryptionFormat_Result : __MethodParameters_Close
 {
     uint32 __ReturnValue;
 };
+
+[Association, Experimental, Version("0.8")]
+class __MethodParameters_LMI_ScsiScan_Result : __MethodParameters_LMI_ScsiScan
+{
+    uint32 __ReturnValue;
+};
+

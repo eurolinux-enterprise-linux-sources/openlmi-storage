@@ -9,9 +9,9 @@ Subclass of :ref:`CIM_StorageCapabilities <CIM-StorageCapabilities>`
 
 This class represents capabilities of LMI_StorageConfigurationService to create Logical Volumes. It describes, which properties and which values can be used in LMI_LVStorageSetting.
 
- Each LMI_VGStoragePool has one instance of this class attached, which describes what kind of Logical Volumes can be allocated from it. As only basic Logical Volumes are supported, it basically only represents underlying redundancy and stripping
+Each LMI_VGStoragePool has one instance of this class attached, which describes what kind of Logical Volumes can be allocated from it. As only basic Logical Volumes are supported, it basically only represents underlying redundancy and stripping
 
- There are no additional properties for now.
+There are no additional properties for now.
 
 
 Key properties
@@ -64,11 +64,39 @@ Local properties
     DataRedundancyDefault describes the default number of complete copies of data that can be maintained. Examples would be RAID 5 where 1 copy is maintained and RAID 1 where 2 or more copies are maintained. Possible values are 1 to n. The bounds for the redundancy (max and min) are defined by DataRedundancyMax and DataRedundancyMin.
 
     
+.. _LMI-LVStorageCapabilities-SupportedStorageElementTypes:
+
+``uint16[]`` **SupportedStorageElementTypes**
+
+    Support for allocation of thinly provisioned StoragePools.
+
+    
+    ======== =====================================
+    ValueMap Values                               
+    ======== =====================================
+    5        ThinlyProvisionedStorageVolume       
+    6        ThinlyProvisionedLogicalDisk         
+    7        ThinlyProvisionedAllocatedStoragePool
+    8        ThinlyProvisionedQuotaStoragePool    
+    9        ThinlyProvisionedLimitlessStoragePool
+    32768    ThinlyProvisionedStorageExtent       
+    ======== =====================================
+    
 .. _LMI-LVStorageCapabilities-NoSinglePointOfFailureDefault:
 
 ``boolean`` **NoSinglePointOfFailureDefault**
 
     Indicates the default value for the NoSinglePointOfFailure property.
+
+    
+.. _LMI-LVStorageCapabilities-ThinProvisionedClientSettableReserve:
+
+``uint64`` **ThinProvisionedClientSettableReserve**
+
+    
+.. _LMI-LVStorageCapabilities-ThinProvisionedDefaultReserve:
+
+``uint64`` **ThinProvisionedDefaultReserve**
 
     
 .. _LMI-LVStorageCapabilities-ExtentStripeLengthDefault:
@@ -143,9 +171,9 @@ Inherited properties
 | ``uint16`` :ref:`ElementType <CIM-StorageCapabilities-ElementType>`
 | ``uint16`` :ref:`DeltaReservationMin <CIM-StorageCapabilities-DeltaReservationMin>`
 | ``uint16`` :ref:`DeltaReservationDefault <CIM-StorageCapabilities-DeltaReservationDefault>`
-| ``uint16`` :ref:`DeltaReservationMax <CIM-StorageCapabilities-DeltaReservationMax>`
 | ``uint16[]`` :ref:`AvailableInterconnectType <CIM-StorageCapabilities-AvailableInterconnectType>`
 | ``uint16[]`` :ref:`AvailableFormFactorType <CIM-StorageCapabilities-AvailableFormFactorType>`
+| ``uint16`` :ref:`DeltaReservationMax <CIM-StorageCapabilities-DeltaReservationMax>`
 | ``uint64`` :ref:`UserDataStripeDepthDefault <CIM-StorageCapabilities-UserDataStripeDepthDefault>`
 
 Inherited methods

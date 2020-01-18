@@ -7,9 +7,9 @@ Class reference
 ===============
 Subclass of :ref:`CIM_FileSystemCapabilities <CIM-FileSystemCapabilities>`
 
-FileSystemCapabilities specifies the combination of properties that a FileSystemService can support when creating or maintaining FileSystems. Each supported combination of properties is specified by a FileSystemSetting that is associated with the FileSystemCapabilities element via ElementSettingData. 
+FileSystemCapabilities specifies the combination of properties that a FileSystemService can support when creating or maintaining FileSystems. Each supported combination of properties is specified by a FileSystemSetting that is associated with the FileSystemCapabilities element via ElementSettingData.
 
-A FileSystemCapabilities element specifies the properties supported when using it. 
+A FileSystemCapabilities element specifies the properties supported when using it.
 
 This class *does not* provide a CreateGoal method! Use CreateSetting instead, which works similarly to LMI_StorageCapabilities.CreateSetting.
 

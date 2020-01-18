@@ -25,7 +25,6 @@ Local properties
 
 ``boolean`` **PowerManagementSupported**
 
-    **Deprecated!** 
     Note: The use of this property has been deprecated. Instead, the existence of an associated PowerManagementCapabilities class (associated using the ElementCapabilities relationship) indicates that power management is supported. Deprecated description: Boolean that indicates that the Device can use power management.
 
     
@@ -79,7 +78,6 @@ Local properties
 
 ``uint64`` **PowerOnHours**
 
-    **Deprecated!** 
     Note: The use of this method is deprecated. 
 
     Deprecated description: The number of consecutive hours that this Device has been powered on since its last power cycle.
@@ -122,6 +120,7 @@ Local properties
 
 ``uint16`` **StatusInfo**
 
+    **Deprecated!** 
     Note: The use of this method is deprecated in lieu of a more clearly named property (EnabledState) that is inherited from ManagedSystemElement and that has additional enumerated values. 
 
     Deprecated description: The StatusInfo property indicates whether the Logical Device is in an enabled state (value=3), disabled state (value=4), some other state (value=1), or an unknown state (value=2). If this property does not apply to the LogicalDevice, the value 5 ("Not Applicable") should be used. If a Device is ("Enabled")(value=3), it has been powered up and is configured and operational. The Device might or might not be functionally active, depending on whether its Availability (or AdditionalAvailability) indicates that it is ("Running/Full Power")(value=3) or ("Off line") (value=8). In an enabled but offline mode, a Device might be performing out-of-band requests, such as running Diagnostics. If StatusInfo is ("Disabled") (value=4), a Device can only be "enabled" or powered off. In a personal computer environment, ("Disabled") means that the driver of the device is not available in the stack. In other environments, a Device can be disabled by removing its configuration file. A disabled device is physically present in a System and consuming resources, but it cannot be communicated with until a driver is loaded, a configuration file is loaded, or some other "enabling" activity has occurred.
@@ -148,7 +147,6 @@ Local properties
 
 ``uint16[]`` **PowerManagementCapabilities**
 
-    **Deprecated!** 
     Note: The use of this property has been deprecated. Instead, use the PowerCapabilites property in an associated PowerManagementCapabilities class. Deprecated description: An enumerated array describing the power management capabilities of the Device.
 
     
@@ -169,7 +167,6 @@ Local properties
 
 ``uint64`` **MaxQuiesceTime**
 
-    **Deprecated!** 
     Note: The use of this property has been deprecated. When evaluating the use of Quiesce, it was determined that this single property is not adequate for describing when a device will automatically exit a quiescent state. In fact, the most likely scenario for a device to exit a quiescent state was determined to be based on the number of outstanding requests queued rather than on a maximum time. This decision will be re-evaluated and repositioned later. 
 
     Deprecated description: Maximum time, in milliseconds, that a Device can run in a "Quiesced" state. The state is defined in its Availability and AdditionalAvailability properties, where "Quiesced" is conveyed by the value 21. What occurs at the end of the time limit is device-specific. The Device can unquiesce, can be offline, or can take other actions. A value of 0 indicates that a Device can remain quiesced indefinitely.
@@ -271,6 +268,7 @@ Local methods
 
 ``uint32`` **SetPowerState** (``uint16`` PowerState, ``datetime`` Time)
 
+    **Deprecated!** 
     Note: The use of this method has been deprecated. Instead, use the SetPowerState method in the associated PowerManagementService class. Deprecated description: Sets the power state of the Device.
 
     
@@ -302,6 +300,7 @@ Local methods
 
 ``uint32`` **QuiesceDevice** (``boolean`` Quiesce)
 
+    **Deprecated!** 
     Note: The use of this method has been deprecated in lieu of the more general RequestStateChange method that directly overlaps with the functionality provided by this method. 
 
     Deprecated description: Requests that the LogicalDevice cleanly cease all activity ("Quiesce" input parameter=TRUE) or resume activity (=FALSE). For this method to quiesce a Device, that Device should have an Availability (or Additional Availability) of "Running/Full Power" (value=3) and an EnabledStatus/StatusInfo of "Enabled". For example, if quiesced, a Device can then be taken offline for diagnostics, or disabled for power off and hot swap. For the method to "unquiesce" a Device, that Device should have an Availability (or AdditionalAvailability) of "Quiesced" (value=21) and an EnabledStatus or StatusInfo of "Enabled". In this case, the Device would be returned to an "Enabled" and "Running/Full Power" status. 
@@ -321,6 +320,7 @@ Local methods
 
 ``uint32`` **EnableDevice** (``boolean`` Enabled)
 
+    **Deprecated!** 
     Note: The use of this method has been deprecated in lieu of the more general RequestStateChange method that directly overlaps with the functionality provided by this method. 
 
     Deprecated description: Requests that the LogicalDevice be enabled ("Enabled" input parameter=TRUE) or disabled (=FALSE). If successful, the StatusInfo or EnabledState properties of the Device should reflect the desired state (enabled or disabled). Note that this function overlaps with the RequestedState property. RequestedState was added to the model to maintain a record (for example, a persisted value) of the last state request. Invoking the EnableDevice method should set the RequestedState property appropriately. 
@@ -364,7 +364,6 @@ Local methods
 
 ``uint32`` **SaveProperties** ()
 
-    **Deprecated!** 
     Note: The use of this method is deprecated. Its function is handled more generally by the ConfigurationData subclass of SettingData. 
 
     Deprecated description: Requests that the Device capture its current configuration, setup or state information, or both in a backing store. 
@@ -379,6 +378,7 @@ Local methods
 
 ``uint32`` **RestoreProperties** ()
 
+    **Deprecated!** 
     Note: The use of this method is deprecated. Its function is handled more generally by the ConfigurationData subclass of SettingData. 
 
     Requests that the Device re-establish its configuration, setup or state information, or both from a backing store. The information would have been captured at an earlier time (using the SaveProperties method). This method might not be supported by all Devices. The method should return 0 if successful, 1 if the request is not supported, and some other value if any other error occurred. In a subclass, the set of possible return codes could be specified using a ValueMap qualifier on the method. The strings to which the ValueMap contents are 'translated' can also be specified in the subclass as a Values array qualifier.

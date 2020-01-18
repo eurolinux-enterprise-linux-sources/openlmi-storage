@@ -80,12 +80,16 @@ class LMI_MDRAIDStorageExtent(ExtentProvider, SettingHelper):
         parents = self.get_base_devices(device)
         # find all parents and get their redundancy
         redundancies = [self._find_redundancy(dev) for dev in parents]
-        if device.level in [0, 1, 4, 5, 6, 10]:
+        level = device.level
+        # blivet > 0.29 has RAIDLevel class instead of level number
+        if hasattr(level, "number"):
+            level = level.number
+        if level in [0, 1, 4, 5, 6, 10]:
             final_redundancy = DeviceProvider.Redundancy \
-                    .get_common_redundancy_list(redundancies, device.level)
+                    .get_common_redundancy_list(redundancies, level)
         else:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
-                    "Unsupported raid type: " + str(device.level))
+                    "Unsupported raid type: " + str(level))
 
         return final_redundancy
 
@@ -100,21 +104,26 @@ class LMI_MDRAIDStorageExtent(ExtentProvider, SettingHelper):
             device = self._get_device(model)
         model['UUID'] = device.uuid
 
-        if device.level == 0:
+        level = device.level
+        # blivet > 0.29 has RAIDLevel class instead of level number
+        if hasattr(level, "number"):
+            level = level.number
+
+        if level == 0:
             model['Level'] = self.Values.Level.RAID0
-        elif device.level == 1:
+        elif level == 1:
             model['Level'] = self.Values.Level.RAID1
-        elif device.level == 4:
+        elif level == 4:
             model['Level'] = self.Values.Level.RAID4
-        elif device.level == 5:
+        elif level == 5:
             model['Level'] = self.Values.Level.RAID5
-        elif device.level == 6:
+        elif level == 6:
             model['Level'] = self.Values.Level.RAID6
-        elif device.level == 10:
+        elif level == 10:
             model['Level'] = self.Values.Level.RAID10
         else:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
-                    "Unknown RAID level: " + device.level)
+                    "Unknown RAID level: " + level)
         return model
 
     @cmpi_logging.trace_method

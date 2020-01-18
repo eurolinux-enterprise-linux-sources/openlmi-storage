@@ -26,7 +26,7 @@ setup(
     author='Jan Safranek',
     author_email='jsafrane@redhat.com',
     url='https://fedorahosted.org/openlmi/',
-    version='0.7.1',
+    version='0.8.0',
     package_dir={'': 'src'},
     namespace_packages = ['lmi'],
     packages=['lmi', 'lmi.storage', 'lmi.storage.util'],

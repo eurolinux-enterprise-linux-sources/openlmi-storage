@@ -25,7 +25,6 @@ Local properties
 
 ``uint64`` **ErrorResolution**
 
-    **Deprecated!** 
     Specifies the range, in bytes, to which the last error can be resolved. For example, if error addresses are resolved to bit 11 (ie, on a typical page basis), then errors can be resolved to 4K boundaries and this property is set to 4000. If the ErrorInfo property is equal to 3, "OK", then this property has no meaning.
 
     
@@ -65,6 +64,7 @@ Local properties
 
 ``uint8[]`` **AdditionalErrorData**
 
+    **Deprecated!** 
     An array of octets holding additional error information. An example is ECC Syndrome or the return of the check bits if a CRC-based ErrorMethodology is used. In the latter case, if a single bit error is recognized and the CRC algorithm is known, it is possible to determine the exact bit that failed. This type of data (ECC Syndrome, Check Bit or Parity Bit data, or other vendor supplied information) is included in this field. If the ErrorInfo property is equal to 3, "OK", then AdditionalErrorData has no meaning.
 
     
@@ -72,7 +72,6 @@ Local properties
 
 ``boolean`` **SystemLevelAddress**
 
-    **Deprecated!** 
     Boolean indicating whether the address information in the property, ErrorAddress, is a system-level address (TRUE) or a physical address (FALSE). If the ErrorInfo property is equal to 3, "OK", then this property has no meaning.
 
     
@@ -124,6 +123,7 @@ Local properties
 
 ``string`` **OtherErrorDescription**
 
+    **Deprecated!** 
     Free form string providing more information if the Error Type property is set to 1, "Other". If not set to 1, this string has no meaning.
 
     
@@ -131,6 +131,7 @@ Local properties
 
 ``uint16`` **ErrorInfo**
 
+    **Deprecated!** 
     An integer enumeration describing the type of error that occurred most recently. For example, single (value=6) or double bit errors (7) can be specified using this property. The values, 12-14, are undefined in the CIM Schema since in DMI, they mix the semantics of the type of error and whether it was correctable or not. The latter is indicated in the property, CorrectableError.
 
     

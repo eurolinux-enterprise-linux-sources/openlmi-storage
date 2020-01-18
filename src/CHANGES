@@ -1,3 +1,15 @@
+New in version 0.8.0:
+* Added support for thin provisioning in LVM. The provider can now create
+  / delete thin pools and thin volumes.
+* Added support for volume group modification - devices can be added / removed
+  from a volume group.
+* Added LMI_StorageExtent.DeviceBusType property to show how a block device is
+  connected to the system (ATA, USB or SCSI).
+* Added LMI_StorageConfigurationService.LMI_SCSIScan() to re-scan local SCSI bus
+  and discover new devices.
+* Added support for blivet version > 0.35.
+* Many small fixes and improvements.
+
 New in version 0.7.1:
 * Removed unimplemented classes from MOF files.
 * Few other bugfixes and small improvements.

@@ -200,15 +200,6 @@ class TestCreatePool(StorageTestBase):
                     InPools=self.partition_names[:1]
                     )
 
-    def test_create_wrong_size(self):
-        """ Test CreateOrModifyStoragePool with Size param."""
-        self.assertRaises(pywbem.CIMError, self.wbemconnection.InvokeMethod,
-                    "CreateOrModifyStoragePool",
-                    self.service,
-                    InExtents=self.partition_names[:1],
-                    Size=pywbem.Uint64(1 * MEGABYTE)
-                    )
-
     def _create_setting(self):
         """ Create a VGStorageSetting and return CIMInstance of it."""
         (retval, outparams) = self.wbemconnection.InvokeMethod(

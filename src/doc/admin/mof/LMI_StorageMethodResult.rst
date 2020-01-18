@@ -35,7 +35,7 @@ Inherited properties
 | ``string`` :ref:`ElementName <CIM-ManagedElement-ElementName>`
 | ``string`` :ref:`Description <CIM-ManagedElement-Description>`
 | ``string`` :ref:`Caption <CIM-ManagedElement-Caption>`
-| ``string`` :ref:`InstanceID <CIM-MethodResult-InstanceID>`
+| ``string`` :ref:`InstanceID <LMI-MethodResult-InstanceID>`
 | ``instance`` :ref:`PostCallIndication <CIM-MethodResult-PostCallIndication>`
 | ``uint64`` :ref:`Generation <CIM-ManagedElement-Generation>`
 | ``instance`` :ref:`PreCallIndication <CIM-MethodResult-PreCallIndication>`

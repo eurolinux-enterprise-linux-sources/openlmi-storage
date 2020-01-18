@@ -353,6 +353,19 @@ class LocalFileSystemProvider(FormatProvider, SettingHelper):
                     stat.f_bavail * stat.f_bsize)
             model['ReadOnly'] = (stat.f_flag & os.ST_RDONLY) > 0
             model['MaxFileNameLength'] = pywbem.Uint32(stat.f_namemax)
+        else:
+            model['Root'] = pywbem.CIMProperty(name="Root", value=None,
+                                               type="string")
+            model['BlockSize'] = pywbem.CIMProperty(name="BlockSize",
+                     value=None, type="uint64")
+            model['FileSystemSize'] = pywbem.CIMProperty(name="FileSystemSize",
+                     value=None, type="uint64")
+            model['AvailableSpace'] = pywbem.CIMProperty(name="AvailableSpace",
+                     value=None, type="uint64")
+            model['ReadOnly'] = pywbem.CIMProperty(name="ReadOnly",
+                     value=None, type="boolean")
+            model['MaxFileNameLength'] = pywbem.CIMProperty(
+                     name="MaxFileNameLength", value=None, type="uint32")
 
         return model
 

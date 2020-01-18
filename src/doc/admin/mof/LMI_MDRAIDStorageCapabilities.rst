@@ -9,7 +9,7 @@ Subclass of :ref:`CIM_StorageCapabilities <CIM-StorageCapabilities>`
 
 This class represents capability of LMI_StorageConfigurationService to create MD RAID arrays. It describes, which properties and which values can be used in LMI_MDRAIDStorageSetting.
 
- There are no additional properties for now.
+There are no additional properties for now.
 
 
 Key properties
@@ -136,7 +136,7 @@ Local methods
         *IN* :ref:`CIM_StorageExtent[] <CIM-StorageExtent>` **InExtents**
             List of devices, from which the new device will be created. The created LMI_MDRAIDStorageSetting will take redundancy and striping of these devices into account. 
 
-             For example, if the application wants to create RAID0 on top of two RAID1 devices, it passes InExtents = (FirstRAID1Extent, SecondRAID1Extent) and Level=0. Resulting LMI_MDRAIDStorageSetting will have DataRedundancy and PackageRedundancy as the minimum of the first and the second RAID1 extents and ExtentStripeLength will be 2 to indicate RAID0 with two devices.
+            For example, if the application wants to create RAID0 on top of two RAID1 devices, it passes InExtents = (FirstRAID1Extent, SecondRAID1Extent) and Level=0. Resulting LMI_MDRAIDStorageSetting will have DataRedundancy and PackageRedundancy as the minimum of the first and the second RAID1 extents and ExtentStripeLength will be 2 to indicate RAID0 with two devices.
 
             
         

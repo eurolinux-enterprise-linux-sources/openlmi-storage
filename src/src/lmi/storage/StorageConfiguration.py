@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -51,6 +51,7 @@ class StorageConfiguration(BaseConfiguration):
         """ :rtype: (``dict``) Dictionary of default values. """
         defaults = BaseConfiguration.default_options().copy()
         defaults['DebugBlivet'] = 'false'
+        defaults['TempDir'] = '/tmp'
         return defaults
 
     @property
@@ -58,3 +59,7 @@ class StorageConfiguration(BaseConfiguration):
         """ Return True if blivet tracing is enabled."""
         return self.config.getboolean('Log', 'DebugBlivet')
 
+    @property
+    def temp_dir(self):
+        """ Return path to temporary directory."""
+        return self.get_safe('Storage', 'TempDir', fallback='/tmp')

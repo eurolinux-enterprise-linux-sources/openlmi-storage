@@ -65,6 +65,11 @@ class TestOverwriteUnused(StorageTestBase):
         self.check_call(['mdadm', '-C', '-l', '0', '-n', '2',
                 '/dev/md/second', self.partitions[0], self.partitions[1]])
         self.check_call(['mdadm', '-S', '/dev/md/second'])
+        # workaround for bug #1111618, mdadm does not clean the symlink
+        try:
+            os.remove('/dev/md/second')
+        except OSError:
+            pass
 
         # partition 2+3: running RAID = used
         self.check_call(['mdadm', '-C', '-l', '0', '-n', '2',
@@ -425,8 +430,8 @@ class TestOverwriteUnused(StorageTestBase):
             # VGsecond: mounted = used
             self.check_call(['vgcreate', 'VGsecond',
                     self.partitions[2], self.partitions[3]])
-            self.check_call(['lvcreate', '-n', 'LVsecond', '-l',
-                    '100%VG', 'VGsecond'])
+            self.check_call(['lvcreate', '--yes', '-n', 'LVsecond',
+                    '-l', '100%VG', 'VGsecond'])
             self.check_call(['mkfs.ext3', '/dev/VGsecond/LVsecond'])
             self.check_call(['mount', '/dev/VGsecond/LVsecond',
                     self.tmpdir + "/second"])
@@ -434,8 +439,8 @@ class TestOverwriteUnused(StorageTestBase):
             # VGthird: has LV = used
             self.check_call(['vgcreate', 'VGthird',
                     self.partitions[4], self.partitions[5]])
-            self.check_call(['lvcreate', '-n', 'LVthird', '-l',
-                    '100%VG', 'VGthird'])
+            self.check_call(['lvcreate', '--yes', '-n', 'LVthird',
+                    '-l', '100%VG', 'VGthird'])
             self.restart_cim()
 
             used = ['VGsecond', 'VGthird']
@@ -489,12 +494,12 @@ class TestOverwriteUnused(StorageTestBase):
                     self.partitions[0], self.partitions[1]])
 
             # LVfirst - unused
-            self.check_call(['lvcreate', '-n', 'LVfirst', '-l',
-                    '50%VG', 'VG'])
+            self.check_call(['lvcreate', '--yes', '-n', 'LVfirst',
+                    '-l', '50%VG', 'VG'])
 
             # LVsecond - mounted = used
-            self.check_call(['lvcreate', '-n', 'LVsecond', '-l',
-                    '50%VG', 'VG'])
+            self.check_call(['lvcreate', '--yes', '-n', 'LVsecond',
+                    '-l', '50%VG', 'VG'])
             self.check_call(['mkfs.ext3', '/dev/VG/LVsecond'])
             self.check_call(['mount', '/dev/VG/LVsecond',
                     self.tmpdir + "/second"])

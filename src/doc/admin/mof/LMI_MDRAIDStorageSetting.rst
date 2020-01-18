@@ -9,9 +9,9 @@ Subclass of :ref:`LMI_StorageSetting <LMI-StorageSetting>`
 
 This class defines characteristics of LMI_MDRAIDStorageExtent which is created or modified by CreateOrModifyElementFromElements method in the LMI_StorageConfigurationService.
 
- Currently no additional properties are necessary in this class, redundancy and stripping is defined by DataRedundancy, PackageRedundancy and ExtentStripeLength.
+Currently no additional properties are necessary in this class, redundancy and stripping is defined by DataRedundancy, PackageRedundancy and ExtentStripeLength.
 
- In future, this class may introduce MD RAID properties like metadata format, additional parity layouts etc.
+In future, this class may introduce MD RAID properties like metadata format, additional parity layouts etc.
 
 
 Key properties

@@ -11,7 +11,7 @@ This service allows the active management of a Storage Server. It allows jobs to
 
 
 
- For now, it supports Volume Group creation and modification (CreateOrModifyStoragePool), allocation/modification of Logical Volume (CreateOrModifyElementFromStoragePool), Creation of MD RAID array () and destruction of all this (DeleteStoragePool, ReturnToStoragePool, ). 
+For now, it supports Volume Group creation and modification (CreateOrModifyStoragePool), allocation/modification of Logical Volume (CreateOrModifyElementFromStoragePool), Creation of MD RAID array () and destruction of all this (DeleteStoragePool, ReturnToStoragePool, ). 
 
 In future, it may support creation of MD RAID containers (i.e. another kind of storage pools), allocation of MD RAIDs from these containers, snapshots of Logical Volumes (AttachReplica), advanced Logical Volumes (for example with RAID characteristics), thin pools and this Logical Volumes and so on.
 
@@ -306,6 +306,64 @@ Local methods
             
         
     
+    .. _LMI-StorageConfigurationService-CreateOrModifyThinPool:
+
+``uint32`` **CreateOrModifyThinPool** (``string`` ElementName, :ref:`LMI_VGStorageSetting <LMI-VGStorageSetting>` Goal, :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` InPool, :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` Pool, ``uint64`` Size, :ref:`CIM_ConcreteJob <CIM-ConcreteJob>` Job)
+
+    Create or modify Thin Pool. This method is shortcut to CreateOrModifyStoragePool with the right Goal. Lazy applications can use this method to create or modify thin pools, without calculation of the Goal setting.
+
+    
+    ======== =======================================
+    ValueMap Values                                 
+    ======== =======================================
+    0        Job Completed with No Error            
+    1        Not Supported                          
+    2        Unknown                                
+    3        Timeout                                
+    4        Failed                                 
+    5        Invalid Parameter                      
+    6        In Use                                 
+    4096     Method Parameters Checked - Job Started
+    4097     Size Not Supported                     
+    ======== =======================================
+    
+    **Parameters**
+    
+        *IN* ``string`` **ElementName**
+            Name of the thin pool. If this parameter is not provided, implementation will choose on its own when creating the device.
+
+            
+        
+        *IN* :ref:`LMI_VGStorageSetting <LMI-VGStorageSetting>` **Goal**
+            Currently not supported.
+
+            
+        
+        *IN* :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` **InPool**
+            The volume group from which the thin pool should be allocated.
+
+            
+        
+        *IN*, *OUT* :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` **Pool**
+            On input: thin pool to modify. Do not use this parameter when creating a thin pool.
+
+            On output: the created or modified thin pool.
+
+            
+        
+        *IN*, *OUT* ``uint64`` **Size**
+            Physical size of the thin pool. The pool can store at most Size bytes of data.
+
+            On input, only used when creating a ThinPool.
+
+            
+        
+        *OUT* :ref:`CIM_ConcreteJob <CIM-ConcreteJob>` **Job**
+            Reference to the job (may be null if job completed).
+
+            
+        
+    
     .. _LMI-StorageConfigurationService-ReturnToStoragePool:
 
 ``uint32`` **ReturnToStoragePool** (:ref:`CIM_ConcreteJob <CIM-ConcreteJob>` Job, :ref:`CIM_LogicalElement <CIM-LogicalElement>` TheElement)
@@ -366,9 +424,9 @@ Local methods
     **Parameters**
     
         *IN* ``string`` **ElementName**
-            Requested volume group name. If this parameter is not provided, implementation will choose on it's own when creating the device.
+            Requested volume group name. If this parameter is not provided, implementation will choose on its own when creating the device.
 
-             When modifying a Volume Group, the VG will be renamed to this name.
+            When modifying a Volume Group, the VG will be renamed to this name.
 
             
         
@@ -380,16 +438,16 @@ Local methods
         *IN* :ref:`CIM_StorageExtent[] <CIM-StorageExtent>` **InExtents**
             List of all Physical Volumes of the VG.
 
-             When creating a VG, these devices will be PVs of the VG.
+            When creating a VG, these devices will be PVs of the VG.
 
-             When modifying a VG, this is list of new PVs of the VG. Any existing PVs, which are not listed in InExtents, will be removed from the VG. Any devices, which are listed in InExtents and are not PVs of the VG will be added to the VG.
+            When modifying a VG, this is new list of PVs of the VG. Any existing PVs, which are not listed in InExtents, will be removed from the VG. Any devices, which are listed in InExtents and are not PVs of the VG will be added to the VG.
 
             
         
         *IN*, *OUT* :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` **Pool**
             On input: VG to modify. Do not use this parameter when creating a VG.
 
-             On output: the created or modified VG.
+            On output: the created or modified VG.
 
             
         
@@ -431,18 +489,18 @@ Local methods
     **Parameters**
     
         *IN* ``string`` **ElementName**
-            Requested Logical Volume name. If this parameter is not provided, implementation will choose on it's own when creating the device.
+            Requested Logical Volume name. If this parameter is not provided, implementation will choose on its own when creating the device.
 
-             When modifying a LV, the LV will be renamed to this name.
+            When modifying a LV, the LV will be renamed to this name.
 
             
         
-        *IN* ``uint64`` **Size**
+        *IN*, *OUT* ``uint64`` **Size**
             Requested LV size. It will be rounded to multiples of VG's ExtentSize.
 
-             When used when modifying a LV, this LV will be resized to this size.
+            When used when modifying a LV, this LV will be resized to this size.
 
-             Only growing of LVs is supported, shrinking is not supported now.
+            Only growing of LVs is supported, shrinking is not supported now.
 
             
         
@@ -459,7 +517,7 @@ Local methods
         *IN*, *OUT* :ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` **TheElement**
             On input: LV to modify. Do not use this parameter when creating a LV.
 
-             On output: the created or modified LV.
+            On output: the created or modified LV.
 
             
         
@@ -477,7 +535,7 @@ Local methods
 
     This method supports renaming or resizing of a Logical Volume.
 
-     If 0 is returned, the function completed successfully and no ConcreteJob instance was required. If 4096/0x1000 is returned, a ConcreteJob will be started to create the element. The Job's reference will be returned in the output parameter Job.
+    If 0 is returned, the function completed successfully and no ConcreteJob instance was required. If 4096/0x1000 is returned, a ConcreteJob will be started to create the element. The Job's reference will be returned in the output parameter Job.
 
     
     ============ =======================================
@@ -507,7 +565,7 @@ Local methods
         *IN* ``uint16`` **ElementType**
             Enumeration indicating the type of element being created or modified. 
 
-            Only StorageElement is supported now. 
+            Only StorageExtent and ThinlyProvisionedStorageVolume are supported now. 
 
             If the input parameter TheElement is specified when the operation is a 'modify', this type value must match the type of that instance.
 
@@ -535,7 +593,7 @@ Local methods
         *IN* :ref:`CIM_ManagedElement <CIM-ManagedElement>` **Goal**
             The requirements for the element to maintain. If set to a null value, the default configuration from the source pool will be used. This parameter should be a reference to a Setting or Profile appropriate to the element being created. If not NULL, this parameter will supply a new Goal when modifying an existing element.
 
-             As we support only Volume Groups and simple Logical Volumes for now, no redundancy or stripping may be specified. Null is the safest option here.
+            As we support only Volume Groups and simple Logical Volumes for now, no redundancy or stripping may be specified. Null is the safest option here.
 
             
         
@@ -569,11 +627,13 @@ Local methods
 
     The capability requirements that the Pool must support are defined using the Goal parameter. 
 
-     This method supports renaming of a Volume Group and adding and removing StorageExtents to/from a Volume Group. 
+    This method supports renaming of a Volume Group and adding and removing StorageExtents to/from a Volume Group. 
+
+    If a device is being removed from a Volume Group, all its data are automatically moved to any free Physical Volume automatically. This can be lengthy operation! Error is reported if there is no space for safe removal of the device. No data is lost when removing a device from Volume Group.
 
     If 0 is returned, then the task completed successfully and the use of ConcreteJob was not required. If the task will take some time to complete, a ConcreteJob will be created and its reference returned in the output parameter Job. 
 
-     This method automatically formats the StorageExtents added to a Volume Group as Physical Volumes.
+    This method automatically formats the StorageExtents added to a Volume Group as Physical Volumes.
 
     
     ============ =======================================
@@ -631,7 +691,7 @@ Local methods
         *IN* ``string[]`` **InExtents**
             Array of strings containing representations of references to CIM_StorageExtent instances, that are used to create the Pool. 
 
-            If a pool is being modified using this method, these StorageExtent instances are interpreted as requested members of the Volume Groups. All StorageExtents, which are members of the Volume Groups and are not listed in InExtents parameter are removed from the Volume Group. All Storage Extents, which are not members of the Volume Group and are listed in InExtents parameter are added to tghe Volume Group.
+            If a pool is being modified using this method, these StorageExtent instances are interpreted as requested members of the Volume Groups. All StorageExtents, which are members of the Volume Groups and are not listed in InExtents parameter are removed from the Volume Group. All Storage Extents, which are not members of the Volume Group and are listed in InExtents parameter are added to the Volume Group.
 
             If null, no extents are removed and/or added to to Volume Group.
 
@@ -649,9 +709,9 @@ Local methods
 
     Create or modify MD RAID array. This method is shortcut to CreateOrModifyElementFromElements with the right Goal. Lazy applications can use this method to create or modify MD RAID with the right level, without calculation of the Goal setting.
 
-     Either Level or Goal must be specified. If both are specified, they must match.
+    Either Level or Goal must be specified. If both are specified, they must match.
 
-     RAID modification is not yet supported.
+    RAID modification is not yet supported.
 
     
     ============ =======================================
@@ -690,7 +750,7 @@ Local methods
             
         
         *IN* ``string`` **ElementName**
-            Requested MD RAID name, i.e. if /dev/md/my_name is created, the ElementName should be set to "my_name". If this parameter is not provided, implementation will choose on it's own when creating the device.
+            Requested MD RAID name, i.e. if /dev/md/my_name is created, the ElementName should be set to "my_name". If this parameter is not provided, implementation will choose on its own when creating the device.
 
             
         
@@ -707,7 +767,7 @@ Local methods
         *IN*, *OUT* :ref:`LMI_MDRAIDStorageExtent <LMI-MDRAIDStorageExtent>` **TheElement**
             On input: MD RAID device to modify. Do not use this parameter when creating new array.
 
-             On output: the created MD RAID.
+            On output: the created MD RAID.
 
             
         
@@ -730,11 +790,11 @@ Local methods
 
     As an input parameter, Size specifies the desired size of the element and must match size of all input StorageVolumes combined in the RAID. Use null to avoid this calculation. As an output parameter, it specifies the size achieved. 
 
-     The desired Settings for the element are specified by the Goal parameter. 
+    The desired Settings for the element are specified by the Goal parameter. 
 
-     If 0 is returned, the function completed successfully and no ConcreteJob instance was required. If 4096/0x1000 is returned, a ConcreteJob will be started to create the element. The Job's reference will be returned in the output parameter Job.
+    If 0 is returned, the function completed successfully and no ConcreteJob instance was required. If 4096/0x1000 is returned, a ConcreteJob will be started to create the element. The Job's reference will be returned in the output parameter Job.
 
-     This method does not support MD RAID modification for now.
+    This method does not support MD RAID modification for now.
 
     
     ============ =======================================
@@ -764,7 +824,7 @@ Local methods
         *IN* ``uint16`` **ElementType**
             Enumeration indicating the type of element being created or modified. 
 
-             Only StorageExtent is supported now.
+            Only StorageExtent is supported now.
 
             If the input parameter TheElement is specified when the operation is a 'modify', this type value must match the type of that instance. The actual CIM class of the created TheElement can be vendor-specific, but it must be a derived class of the appropriate CIM class -- i.e., CIM_StorageVolume, CIM_StorageExtent, CIM_LogicalDisk, or CIM_StoragePool.
 
@@ -807,6 +867,44 @@ Local methods
         
         *IN*, *OUT* :ref:`CIM_LogicalElement <CIM-LogicalElement>` **TheElement**
             As an input parameter: if null, creates a new element. If not null, then the method modifies the specified element. As an output parameter, it is a reference to the resulting element.
+
+            
+        
+    
+    .. _LMI-StorageConfigurationService-CreateOrModifyThinLV:
+
+``uint32`` **CreateOrModifyThinLV** (``string`` ElementName, :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` ThinPool, :ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` TheElement, ``uint64`` Size, :ref:`CIM_ConcreteJob <CIM-ConcreteJob>` Job)
+
+    **Parameters**
+    
+        *IN* ``string`` **ElementName**
+            Requested Thin Logical Volume name. If this parameter is not provided, implementation will choose on it's own when creating the device.
+
+            
+        
+        *IN* :ref:`LMI_VGStoragePool <LMI-VGStoragePool>` **ThinPool**
+            Used only when creating a thin volume. This parameter specifies from which thinpool should be the thin volume allocated.
+
+            
+        
+        *IN*, *OUT* :ref:`LMI_LVStorageExtent <LMI-LVStorageExtent>` **TheElement**
+            On input: LV to modify. Do not use this parameter when creating a LV.
+
+            On output: the created or modified LV.
+
+            
+        
+        *IN*, *OUT* ``uint64`` **Size**
+            Requested thin LV size. It will be rounded to multiples of VG's ExtentSize.
+
+            In contrast to the size of a thin pool, this size is logical. It can be much higher than the physical size of the underlying storage.
+
+            Modification is not supported.
+
+            
+        
+        *OUT* :ref:`CIM_ConcreteJob <CIM-ConcreteJob>` **Job**
+            Reference to the job (may be null if job completed).
 
             
         
@@ -883,6 +981,48 @@ Local methods
             
         
     
+    .. _LMI-StorageConfigurationService-LMI-ScsiScan:
+
+``uint32`` **LMI_ScsiScan** (:ref:`CIM_ConcreteJob <CIM-ConcreteJob>` Job)
+
+    This method requests that the system rescan SCSI devices for changes in their configuration. This method may also be used on a storage appliance to force rescanning of attached SCSI devices. 
+
+    
+
+    This operation can be disruptive.
+
+    
+
+    The method is LMI version of DMTF's ScsiScan(), just with '4096' as 'Method Parameters Checked - Job Started' return value. Also, the method parameters were trimmed, we may extend it to support complete DMTF ScsiScan parameters.
+
+    
+    ============ ========================================
+    ValueMap     Values                                  
+    ============ ========================================
+    0            Success                                 
+    1            Not Supported                           
+    2            Unknown                                 
+    3            Timeout                                 
+    4            Failed                                  
+    5            Invalid Parameter                       
+    6..4095      DMTF Reserved                           
+    4096         Method Parameters Checked - Job Started 
+    4097         Invalid Initiator                       
+    4098         No matching target found                
+    4099         No matching LUs found                   
+    4100         Prohibited by name binding configuration
+    ..           DMTF Reserved                           
+    32768..65535 Vendor Specific                         
+    ============ ========================================
+    
+    **Parameters**
+    
+        *OUT* :ref:`CIM_ConcreteJob <CIM-ConcreteJob>` **Job**
+            Reference to the job (may be null if job completed).
+
+            
+        
+    
 
 Inherited properties
 ^^^^^^^^^^^^^^^^^^^^
@@ -914,7 +1054,7 @@ Inherited methods
 ^^^^^^^^^^^^^^^^^
 
 | :ref:`AttachReplica <CIM-StorageConfigurationService-AttachReplica>`
-| :ref:`ReturnElementsToStoragePool <CIM-StorageConfigurationService-ReturnElementsToStoragePool>`
+| :ref:`CreateOrModifyReplicationPipe <CIM-StorageConfigurationService-CreateOrModifyReplicationPipe>`
 | :ref:`RequestStateChange <CIM-EnabledLogicalElement-RequestStateChange>`
 | :ref:`AttachOrModifyReplica <CIM-StorageConfigurationService-AttachOrModifyReplica>`
 | :ref:`ScsiScan <CIM-StorageConfigurationService-ScsiScan>`
@@ -926,7 +1066,7 @@ Inherited methods
 | :ref:`ChangeAffectedElementsAssignedSequence <CIM-Service-ChangeAffectedElementsAssignedSequence>`
 | :ref:`AssignStorageResourceAffinity <CIM-StorageConfigurationService-AssignStorageResourceAffinity>`
 | :ref:`CreateElementsFromStoragePool <CIM-StorageConfigurationService-CreateElementsFromStoragePool>`
-| :ref:`CreateOrModifyReplicationPipe <CIM-StorageConfigurationService-CreateOrModifyReplicationPipe>`
+| :ref:`ReturnElementsToStoragePool <CIM-StorageConfigurationService-ReturnElementsToStoragePool>`
 | :ref:`ModifySynchronization <CIM-StorageConfigurationService-ModifySynchronization>`
 | :ref:`RequestUsageChange <CIM-StorageConfigurationService-RequestUsageChange>`
 

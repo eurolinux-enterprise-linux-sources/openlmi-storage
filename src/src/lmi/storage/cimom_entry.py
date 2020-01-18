@@ -1,4 +1,4 @@
-# Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2012-2014 Red Hat, Inc.  All rights reserved.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Authors: Jan Safranek <jsafrane@redhat.com>
+#          Jan Synacek  <jsynacek@redhat.com>
 # -*- coding: utf-8 -*-
 """
     This module is the main entry from lmi.storage.CIMOM.
@@ -39,6 +40,8 @@ from lmi.storage.LMI_MDRAIDBasedOn import LMI_MDRAIDBasedOn
 from lmi.storage.LMI_LVBasedOn import LMI_LVBasedOn
 from lmi.storage.LMI_LVAllocatedFromStoragePool \
         import LMI_LVAllocatedFromStoragePool
+from lmi.storage.LMI_VGAllocatedFromStoragePool \
+        import LMI_VGAllocatedFromStoragePool
 from lmi.storage.LMI_VGAssociatedComponentExtent \
         import LMI_VGAssociatedComponentExtent
 from lmi.storage.LMI_DiskPartitionConfigurationSetting \
@@ -96,11 +99,13 @@ from lmi.storage.LMI_LUKSStorageExtent import LMI_LUKSStorageExtent
 from lmi.storage.LMI_LUKSFormat import LMI_LUKSFormat
 from lmi.storage.LMI_ExtentEncryptionConfigurationService import LMI_ExtentEncryptionConfigurationService
 from lmi.storage.LMI_LUKSBasedOn import LMI_LUKSBasedOn
+from lmi.storage.LMI_MediaPresent import LMI_MediaPresent
 
 import lmi.providers.cmpi_logging as cmpi_logging
 from lmi.providers.ComputerSystem import get_system_name
 import blivet
 import logging
+import tempfile
 
 timer_manager = None
 indication_manager = None
@@ -139,6 +144,9 @@ def get_providers(env):
         for handler in root_logger.handlers:
             logger.addHandler(handler)
     LOG().info("Provider init.")
+
+    # Initialize temporary directory (for blivet)
+    tempfile.tempdir = config.temp_dir
 
     # Initialize ComputerSystem.Name
     get_system_name(env)
@@ -355,6 +363,9 @@ def get_providers(env):
     provider = LMI_LVAllocatedFromStoragePool(**opts)
     providers['LMI_LVAllocatedFromStoragePool'] = provider
 
+    provider = LMI_VGAllocatedFromStoragePool(**opts)
+    providers['LMI_VGAllocatedFromStoragePool'] = provider
+
     provider = LMI_VGAssociatedComponentExtent(**opts)
     providers['LMI_VGAssociatedComponentExtent'] = provider
 
@@ -474,6 +485,9 @@ def get_providers(env):
             "LMI_BlockStorageStatisticsElementCapabilities",
             cap_provider, service_provider, **opts)
     providers['LMI_BlockStorageStatisticsElementCapabilities'] = assoc_provider
+
+    provider = LMI_MediaPresent(**opts)
+    providers['LMI_MediaPresent'] = provider
 
     LOG().trace_info("Registered providers: %s", str(providers))
     return providers

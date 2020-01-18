@@ -59,6 +59,13 @@ Local properties
     Indicates whether or not there exists no single point of failure.
 
     
+.. _LMI-DiskPartition-DeviceBusType:
+
+``string`` **DeviceBusType**
+
+    Name of bus, used to connect the block device, such as USB, SCSI or ATA. This property is available mostly for disk block devices, not for their descendants like partitions, logical volumes and so on. Note that the list of values may not be complete and is not guaranteed to be stable.
+
+    
 .. _LMI-DiskPartition-ElementName:
 
 ``string`` **ElementName**

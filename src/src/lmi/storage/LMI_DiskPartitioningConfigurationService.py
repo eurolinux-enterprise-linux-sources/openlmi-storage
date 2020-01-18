@@ -254,7 +254,7 @@ class LMI_DiskPartitionConfigurationService(ServiceProvider):
             ending address parameters are null, the resulting partition will
             occupy the entire underlying extent. If the starting address is
             non-null and the ending address is null, the resulting partition
-            will extend to the end of the underlying extent. \n\nIn
+            will extend to the end of the underlying extent.\n\nIn
             contradiction to SMI-S, no LogicalDisk will be created on the
             partition.\nIf logical partition is being created, it's start/end
             sector must include space for partition metadata and any alignment
@@ -439,7 +439,7 @@ class LMI_DiskPartitionConfigurationService(ServiceProvider):
         # check size and grow it if necessary
         if size is None:
             grow = True
-            size = 1
+            size = storage.to_blivet_size(units.MEGABYTE)
         else:
             # check maximum size
             max_partition = self._get_max_partition_size(device, part_type)
@@ -457,7 +457,7 @@ class LMI_DiskPartitionConfigurationService(ServiceProvider):
 
             # Ok, the partition will fit. Continue.
             grow = False
-            size = float(size) / units.MEGABYTE
+            size = storage.to_blivet_size(size)
 
         args = {
                 'parents': [device],
@@ -483,12 +483,12 @@ class LMI_DiskPartitionConfigurationService(ServiceProvider):
         # finally, do the dirty job
         action = blivet.deviceaction.ActionCreateDevice(partition)
         storage.do_storage_action(self.storage, [action])
-        size = partition.size * units.MEGABYTE
+        size = storage.from_blivet_size(partition.size)
 
         ret = self.Values.LMI_CreateOrModifyPartition\
                 .Job_Completed_with_No_Error
         # re-read the partition from blivet, it should have all device links
-        partition = self.storage.devicetree.getDeviceByPath(partition.path)
+        partition = storage.getRealDeviceByPath(self.storage, partition.path)
         partition_name = self.provider_manager.get_name_for_device(partition)
         outparams = {
                 'Size': pywbem.Uint64(size),
@@ -514,7 +514,7 @@ class LMI_DiskPartitionConfigurationService(ServiceProvider):
 
             Create new partition on given extent.Partition modification is not
             yet supported.The implementation will select the best space to fit
-            the partition, with all alignment rules etc. \nIf no Size
+            the partition, with all alignment rules etc.\nIf no Size
             parameter is provided, the largest possible partition is
             created.\nIf no Goal is provided and GPT partition is requested,
             normal partition is created. If no Goal is provided and MS-DOS

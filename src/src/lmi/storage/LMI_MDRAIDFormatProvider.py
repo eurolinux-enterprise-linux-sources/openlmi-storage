@@ -30,6 +30,7 @@ LMI_MDRAIDFormatProvider
 from lmi.storage.FormatProvider import FormatProvider
 import blivet.formats.mdraid
 import lmi.providers.cmpi_logging as cmpi_logging
+from lmi.storage.util import storage
 
 class LMI_MDRAIDFormatProvider(FormatProvider):
     """
@@ -47,6 +48,18 @@ class LMI_MDRAIDFormatProvider(FormatProvider):
         if  isinstance(fmt, blivet.formats.mdraid.MDRaidMember):
             return True
         return False
+
+    @cmpi_logging.trace_method
+    def get_format_id(self, device, fmt):
+        """
+            Return LMI_DataFormat.Name. The name should be unique and stable
+            across reboots or reconfigurations.
+
+            This is workaround for MDRaidMember reporting wrong UUID, see
+            https://bugzilla.redhat.com/show_bug.cgi?id=1070095
+        """
+        # TODO: remove this method when 1070095 is fixed
+        return "DEVICE=" + storage.get_persistent_name(device)
 
     @cmpi_logging.trace_method
     def get_instance(self, env, model, fmt=None):
