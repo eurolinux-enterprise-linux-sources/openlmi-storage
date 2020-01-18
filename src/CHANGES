@@ -1,3 +1,7 @@
+New in version 0.7.1:
+* Removed unimplemented classes from MOF files.
+* Few other bugfixes and small improvements.
+
 New in version 0.7.0:
 * LUKS management - encrypted devices can be created, deleted, opened and
   closed.

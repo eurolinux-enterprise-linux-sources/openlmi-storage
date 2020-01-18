@@ -48,3 +48,14 @@ class MountingProvider(BaseProvider):
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "No such device: " + fs['Name'])
 
         return (device, fmt)
+
+    def check_get_instance(self, device, spec, path):
+        if isinstance(device, blivet.devices.NoDevice):
+            paths = [device.format.mountpoint]
+        else:
+            paths = blivet.util.get_mount_paths(device.path)
+
+        if device is None or not paths:
+            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "No such mounted device: " + spec)
+        if path not in paths and device.path != spec:
+            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "%s is not mounted here: %s" % (spec, path))

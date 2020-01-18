@@ -494,7 +494,7 @@ class LMI_StorageConfigurationService(ServiceProvider):
                         "Device %s disappeared." % (devname,))
             devices.append(device)
 
-        pool = self.storage.devicetree.getDeviceByPath(poolname)
+        pool = self.provider_manager.get_device_for_name(poolname)
         if not pool:
             raise pywbem.CIMError(pywbem.CIM_ERR_FAILED,
                     "Pool %s disappeared." % (poolname,))
@@ -598,11 +598,11 @@ class LMI_StorageConfigurationService(ServiceProvider):
             return couple (devices, redundancies), where devices
             is array of StorageDevices and redundancies is array
             of Redundancy of the devices.
-            Return (None, None), if no InExtents were given.
+            Return ([], []), if no InExtents were given.
             Raise CIMError, if any of the extents cannot be found.
         """
         if not param_inextents:
-            return (None, None)
+            return ([], [])
         devices = []
         redundancies = []
         for extent_name in param_inextents:

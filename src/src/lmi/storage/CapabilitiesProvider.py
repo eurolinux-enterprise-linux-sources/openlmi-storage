@@ -169,6 +169,10 @@ class CapabilitiesProvider(BaseProvider):
         return (rval, out_params)
 
     @cmpi_logging.trace_method
+    def cim_method_lmi_createsetting(self, env, object_name):
+        self.cim_method_createsetting(env, object_name)
+
+    @cmpi_logging.trace_method
     def get_default_capabilities(self):
         """
             Return default capabilities or None if there are no default ones.

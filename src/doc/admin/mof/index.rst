@@ -64,7 +64,6 @@ Class reference
     CIM_ResidesOnExtent
     CIM_ResourcePool
     CIM_Service
-    CIM_SettingAssociatedToCapabilities
     CIM_SettingData
     CIM_StatisticalData
     CIM_StatisticsCapabilities
@@ -99,17 +98,14 @@ Class reference
     LMI_DiskPartitionConfigurationSetting
     LMI_DiskPartitionElementCapabilities
     LMI_DiskPartitionElementSettingData
-    LMI_EncryptionElementCapabilities
-    LMI_EncryptionElementSettingData
     LMI_EncryptionExtent
     LMI_EncryptionFormat
-    LMI_EncryptionFormatCapabilities
-    LMI_EncryptionFormatSetting
     LMI_ExtentEncryptionConfigurationService
     LMI_FileSystemCapabilities
     LMI_FileSystemConfigurationCapabilities
     LMI_FileSystemConfigurationElementCapabilities
     LMI_FileSystemConfigurationService
+    LMI_FileSystemElementCapabilities
     LMI_FileSystemElementSettingData
     LMI_FileSystemSetting
     LMI_GenericDiskPartition
@@ -119,12 +115,7 @@ Class reference
     LMI_HostedStorageStatisticsCollection
     LMI_InstalledPartitionTable
     LMI_LUKSBasedOn
-    LMI_LUKSElementCapabilities
-    LMI_LUKSElementSettingData
     LMI_LUKSFormat
-    LMI_LUKSFormatCapabilities
-    LMI_LUKSFormatSetting
-    LMI_LUKSSettingAssociatedToCapabilities
     LMI_LUKSStorageExtent
     LMI_LVAllocatedFromStoragePool
     LMI_LVBasedOn
@@ -138,7 +129,6 @@ Class reference
     LMI_MDRAIDElementCapabilities
     LMI_MDRAIDElementSettingData
     LMI_MDRAIDFormat
-    LMI_MDRAIDFormatResidesOnExtent
     LMI_MDRAIDStorageCapabilities
     LMI_MDRAIDStorageExtent
     LMI_MDRAIDStorageSetting
@@ -155,7 +145,6 @@ Class reference
     LMI_OwningJobElement
     LMI_OwningStorageJobElement
     LMI_PVFormat
-    LMI_PVFormatResidesOnExtent
     LMI_PartitionBasedOn
     LMI_ResidesOnExtent
     LMI_StorageConfigurationService

@@ -82,6 +82,13 @@ type: association instance
 namespace: root/cimv2
 group: pycmpiLMI_Storage
 
+[LMI_VGElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: association instance
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
 [LMI_StorageConfigurationService]
 provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
 location: pyCmpiProvider
@@ -106,7 +113,7 @@ group: pycmpiLMI_Storage
 [LMI_MDRAIDElementCapabilities]
 provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
 location: pyCmpiProvider
-type: instance method
+type: association instance
 namespace: root/cimv2
 group: pycmpiLMI_Storage
 
@@ -228,6 +235,20 @@ namespace: root/cimv2
 group: pycmpiLMI_Storage
 
 [LMI_FileSystemConfigurationElementCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance association
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemCapabilities]
+provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
+location: pyCmpiProvider
+type: instance method
+namespace: root/cimv2
+group: pycmpiLMI_Storage
+
+[LMI_FileSystemElementCapabilities]
 provider: /usr/lib/python2.7/site-packages/lmi/storage/cimom_entry.py
 location: pyCmpiProvider
 type: instance association

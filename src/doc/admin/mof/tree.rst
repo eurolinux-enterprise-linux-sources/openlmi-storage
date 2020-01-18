@@ -31,41 +31,34 @@ Inheritance tree
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_PartitionBasedOn <LMI-PartitionBasedOn>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LVBasedOn <LMI-LVBasedOn>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSBasedOn <LMI-LUKSBasedOn>`
-|    \|--- \* :ref:`CIM_SettingAssociatedToCapabilities <CIM-SettingAssociatedToCapabilities>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSSettingAssociatedToCapabilities <LMI-LUKSSettingAssociatedToCapabilities>`
 |    \|--- \* :ref:`LMI_MountPoint <LMI-MountPoint>`
 |    \|--- \* :ref:`CIM_AbstractElementAllocatedFromPool <CIM-AbstractElementAllocatedFromPool>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_ElementAllocatedFromPool <CIM-ElementAllocatedFromPool>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_AllocatedFromStoragePool <CIM-AllocatedFromStoragePool>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LVAllocatedFromStoragePool <LMI-LVAllocatedFromStoragePool>`
-|    \|--- \* :ref:`LMI_AttachedFileSystem <LMI-AttachedFileSystem>`
-|    \|--- \* :ref:`LMI_HostedMount <LMI-HostedMount>`
-|    \|--- \* :ref:`CIM_ResidesOnExtent <CIM-ResidesOnExtent>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_ResidesOnExtent <LMI-ResidesOnExtent>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_MDRAIDFormatResidesOnExtent <LMI-MDRAIDFormatResidesOnExtent>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_PVFormatResidesOnExtent <LMI-PVFormatResidesOnExtent>`
 |    \|--- \* :ref:`CIM_HostedDependency <CIM-HostedDependency>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_HostedService <CIM-HostedService>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_HostedStorageService <LMI-HostedStorageService>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_HostedCollection <CIM-HostedCollection>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_HostedStorageStatisticsCollection <LMI-HostedStorageStatisticsCollection>`
+|    \|--- \* :ref:`LMI_HostedMount <LMI-HostedMount>`
+|    \|--- \* :ref:`CIM_ResidesOnExtent <CIM-ResidesOnExtent>`
+|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_ResidesOnExtent <LMI-ResidesOnExtent>`
+|    \|--- \* :ref:`LMI_AttachedFileSystem <LMI-AttachedFileSystem>`
 |    \|--- \* :ref:`CIM_InstalledPartitionTable <CIM-InstalledPartitionTable>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_InstalledPartitionTable <LMI-InstalledPartitionTable>`
 | \* :ref:`CIM_ElementCapabilities <CIM-ElementCapabilities>`
 |    \|--- \* :ref:`LMI_BlockStorageStatisticsElementCapabilities <LMI-BlockStorageStatisticsElementCapabilities>`
 |    \|--- \* :ref:`LMI_MDRAIDElementCapabilities <LMI-MDRAIDElementCapabilities>`
-|    \|--- \* :ref:`LMI_EncryptionElementCapabilities <LMI-EncryptionElementCapabilities>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSElementCapabilities <LMI-LUKSElementCapabilities>`
 |    \|--- \* :ref:`LMI_LVElementCapabilities <LMI-LVElementCapabilities>`
 |    \|--- \* :ref:`LMI_MountElementCapabilities <LMI-MountElementCapabilities>`
 |    \|--- \* :ref:`LMI_VGElementCapabilities <LMI-VGElementCapabilities>`
 |    \|--- \* :ref:`LMI_DiskPartitionElementCapabilities <LMI-DiskPartitionElementCapabilities>`
+|    \|--- \* :ref:`LMI_FileSystemElementCapabilities <LMI-FileSystemElementCapabilities>`
 |    \|--- \* :ref:`LMI_FileSystemConfigurationElementCapabilities <LMI-FileSystemConfigurationElementCapabilities>`
 | \* :ref:`CIM_ElementSettingData <CIM-ElementSettingData>`
 |    \|--- \* :ref:`LMI_FileSystemElementSettingData <LMI-FileSystemElementSettingData>`
 |    \|--- \* :ref:`LMI_MDRAIDElementSettingData <LMI-MDRAIDElementSettingData>`
-|    \|--- \* :ref:`LMI_EncryptionElementSettingData <LMI-EncryptionElementSettingData>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSElementSettingData <LMI-LUKSElementSettingData>`
 |    \|--- \* :ref:`LMI_LVElementSettingData <LMI-LVElementSettingData>`
 |    \|--- \* :ref:`LMI_DiskPartitionElementSettingData <LMI-DiskPartitionElementSettingData>`
 |    \|--- \* :ref:`LMI_VGElementSettingData <LMI-VGElementSettingData>`
@@ -83,8 +76,6 @@ Inheritance tree
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_MethodResult <LMI-MethodResult>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_StorageMethodResult <LMI-StorageMethodResult>`
 |    \|--- \* :ref:`CIM_Capabilities <CIM-Capabilities>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_EncryptionFormatCapabilities <LMI-EncryptionFormatCapabilities>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSFormatCapabilities <LMI-LUKSFormatCapabilities>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_FileSystemCapabilities <CIM-FileSystemCapabilities>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_FileSystemCapabilities <LMI-FileSystemCapabilities>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_FileSystemConfigurationCapabilities <CIM-FileSystemConfigurationCapabilities>`
@@ -160,8 +151,6 @@ Inheritance tree
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_FileSystemSetting <CIM-FileSystemSetting>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_FileSystemSetting <LMI-FileSystemSetting>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_DiskPartitionConfigurationSetting <LMI-DiskPartitionConfigurationSetting>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_EncryptionFormatSetting <LMI-EncryptionFormatSetting>`
-|    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_LUKSFormatSetting <LMI-LUKSFormatSetting>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_MountedFileSystemSetting <LMI-MountedFileSystemSetting>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`CIM_StorageSetting <CIM-StorageSetting>`
 |    \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \| |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp|  |nbsp| \|--- \* :ref:`LMI_StorageSetting <LMI-StorageSetting>`

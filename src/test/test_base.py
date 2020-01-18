@@ -40,7 +40,6 @@ class StorageTestBase(unittest.TestCase):
     """
 
     SYSTEM_CLASS_NAME = "PG_ComputerSystem"
-    SYSTEM_NAME = socket.getfqdn()
     DISK_CLASS = "LMI_StorageExtent"
 
     DEFAULT_JOB_TIMEOUT = 5  # seconds
@@ -74,6 +73,9 @@ class StorageTestBase(unittest.TestCase):
                     + device + '"')
             if elems:
                 cls.partition_names.append(elems[0].path)
+
+        # get correct system name
+        cls.SYSTEM_NAME = cls.disk_name['SystemName']
 
     def setUp(self):
         self.start_udev_monitor()

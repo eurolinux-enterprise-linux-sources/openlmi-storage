@@ -607,8 +607,9 @@ class LMI_MemberOfBlockStatisticsManifestCollection(BaseProvider):
             raise pywbem.CIMError(pywbem.CIM_ERR_NOT_FOUND,
                     "Unknown Collection InstanceID.")
         # get_instance will throw Not Found error if the Member is wrong:
+        # (use Member copy to avoid modification of 'model')
         _manifest_model = self.manifest_provider.get_instance(
-                env, model['Member'])
+                env, model['Member'].copy())
         return model
 
     @cmpi_logging.trace_method

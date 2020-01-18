@@ -1,0 +1,44 @@
+a056e11e52faa8dd879cc42771a196337a09852a
+Author: Jan Synacek <jsynacek@redhat.com>
+Date:   Fri Jan 17 10:41:21 2014 +0100
+
+    Convert strings to object paths.
+
+    CreateOrModifyStoragePool() requires its InExtents argument be specified
+    as an array of strings. The strings should be properly converted into
+    CIMInstanceName objects.
+
+diff --git a/src/lmi/storage/LMI_StorageConfigurationService.py b/src/lmi/storage/LMI_StorageConfigurationService.py
+index bdd3851..13aa06b 100644
+--- a/src/lmi/storage/LMI_StorageConfigurationService.py
++++ b/src/lmi/storage/LMI_StorageConfigurationService.py
+@@ -38,4 +38,5 @@ from lmi.storage.SettingProvider import SettingProvider
+ from lmi.providers.JobManager import Job
+ import time
++import re
+ 
+ LOG = cmpi_logging.get_logger(__name__)
+@@ -602,4 +603,15 @@ class LMI_StorageConfigurationService(ServiceProvider):
+             Raise CIMError, if any of the extents cannot be found.
+         """
++
++        def string_to_instance_name(string):
++            m = re.search('(?://([^:.,]+)/)?([^:.,]+/[^:.,]+):(\w+)\.', string)
++            (host, namespace, classname) = m.groups()
++            kb = re.findall(r'(\w+)="(.*?)(?<!\\)"', string)
++
++            return pywbem.CIMInstanceName(classname=classname,
++                                          namespace=namespace,
++                                          keybindings=kb,
++                                          host=host)
++
+         if not param_inextents:
+             return ([], [])
+@@ -607,4 +619,7 @@ class LMI_StorageConfigurationService(ServiceProvider):
+         redundancies = []
+         for extent_name in param_inextents:
++            if isinstance(extent_name, str):
++                extent_name = string_to_instance_name(extent_name)
++
+             provider = self.provider_manager.get_device_provider_for_name(
+                     extent_name)

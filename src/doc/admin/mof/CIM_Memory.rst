@@ -25,6 +25,7 @@ Local properties
 
 ``uint64`` **ErrorResolution**
 
+    **Deprecated!** 
     Specifies the range, in bytes, to which the last error can be resolved. For example, if error addresses are resolved to bit 11 (ie, on a typical page basis), then errors can be resolved to 4K boundaries and this property is set to 4000. If the ErrorInfo property is equal to 3, "OK", then this property has no meaning.
 
     
@@ -32,6 +33,7 @@ Local properties
 
 ``uint16`` **ErrorAccess**
 
+    **Deprecated!** 
     An integer enumeration indicating the memory access operation that caused the last error. The type of error is described by the ErrorInfo property. If the ErrorInfo property is equal to 3, "OK", then this property has no meaning.
 
     
@@ -56,7 +58,6 @@ Local properties
 
 ``boolean`` **CorrectableError**
 
-    **Deprecated!** 
     Boolean indicating that the most recent error was correctable. If the ErrorInfo property is equal to 3, "OK", then this property has no meaning.
 
     
@@ -79,7 +80,6 @@ Local properties
 
 ``uint16`` **ErrorDataOrder**
 
-    **Deprecated!** 
     The ordering for data stored in the ErrorData property. "Least Significant Byte First" (value=1) or "Most Significant Byte First" (2) can be specified. If ErrorTransferSize is 0, then this property has no meaning.
 
     
@@ -95,7 +95,6 @@ Local properties
 
 ``uint32`` **ErrorTransferSize**
 
-    **Deprecated!** 
     The size of the data transfer in bits that caused the last error. 0 indicates no error. If the ErrorInfo property is equal to 3, "OK", then this property should be set to 0.
 
     
@@ -103,7 +102,6 @@ Local properties
 
 ``uint64`` **ErrorAddress**
 
-    **Deprecated!** 
     Specifies the address of the last memory error. The type of error is described by the ErrorInfo property. If the ErrorInfo property is equal to 3, "OK", then this property has no meaning.
 
     
@@ -111,6 +109,7 @@ Local properties
 
 ``uint8[]`` **ErrorData**
 
+    **Deprecated!** 
     Data captured during the last erroneous mebmory access. The data occupies the first n octets of the array necessary to hold the number of bits specified by the ErrorTransferSize property. If ErrorTransferSize is 0, then this property has no meaning.
 
     
@@ -125,7 +124,6 @@ Local properties
 
 ``string`` **OtherErrorDescription**
 
-    **Deprecated!** 
     Free form string providing more information if the Error Type property is set to 1, "Other". If not set to 1, this string has no meaning.
 
     
@@ -159,7 +157,6 @@ Local properties
 
 ``datetime`` **ErrorTime**
 
-    **Deprecated!** 
     The time that the last memory error occurred. The type of error is described by the ErrorInfo property. If the Error Info property is equal to 3, "OK", then this property has no meaning.
 
     

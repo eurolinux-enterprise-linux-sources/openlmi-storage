@@ -1,7 +1,7 @@
 %global logfile %{_localstatedir}/log/openlmi-install.log
 
 Name:           openlmi-storage
-Version:        0.7.0
+Version:        0.7.1
 Release:        1
 Summary:        CIM providers for storage management
 
@@ -147,6 +147,9 @@ fi >> %logfile 2>&1
 %{_docdir}/%{name}/admin_guide
 
 %changelog
+* Tue Jan  7 2014 Jan Safranek <jsafrane@redhat.com> - 0.7.1-1
+- Released new version.
+
 * Mon Nov  4 2013 Jan Safranek <jsafrane@redhat.com> - 0.7.0-1
 - Released new version.
 - LUKS implemented.

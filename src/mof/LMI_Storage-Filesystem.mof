@@ -315,6 +315,11 @@ class LMI_FileSystemConfigurationElementCapabilities : CIM_ElementCapabilities
 {
 };
 
+[ Version("0.7.1"), Experimental ]
+class LMI_FileSystemElementCapabilities : CIM_ElementCapabilities
+{
+};
+
 
 [ Version("0.5.1"), Experimental, Association ]
 class LMI_HostedFileSystem : CIM_HostedFileSystem

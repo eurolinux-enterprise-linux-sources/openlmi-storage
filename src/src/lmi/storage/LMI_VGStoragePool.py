@@ -59,6 +59,8 @@ class LMI_VGStoragePool(DeviceProvider, SettingHelper):
             return False
 
         instance_id = object_name['InstanceID']
+        if instance_id is None:
+            return False
         parts = instance_id.split(":")
         if len(parts) != 3:
             return False

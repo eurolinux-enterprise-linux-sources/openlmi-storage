@@ -91,6 +91,19 @@ class TestCreateVG(StorageTestBase):
                 vg['ExtentSize'] * vg['RemainingExtents'],
                 vg['RemainingManagedSpace'])
 
+        # check LVStorageCapabilities
+        caps = self.wbemconnection.Associators(vgname, ResultClass="LMI_LVStorageCapabilities")
+        self.assertEqual(len(caps), 1)
+        cap = caps[0]
+        self.assertEqual(cap['DataRedundancyDefault'], 1)
+        self.assertEqual(cap['DataRedundancyMin'], 1)
+        self.assertEqual(cap['DataRedundancyMax'], 1)
+        self.assertEqual(cap['PackageRedundancyDefault'], 0)
+        self.assertEqual(cap['PackageRedundancyMin'], 0)
+        self.assertEqual(cap['PackageRedundancyMax'], 0)
+        self.assertIsNone(cap['ParityLayoutDefault'])
+        self.assertEqual(cap['ExtentStripeLengthDefault'], 1)
+
         (ret, outparams) = self.invoke_async_method(
                 'DeleteVG',
                 self.service,
@@ -264,6 +277,19 @@ class TestCreateVG(StorageTestBase):
         self.assertEqual(setting['PackageRedundancyGoal'], goal['PackageRedundancyGoal'])
         self.assertLessEqual(setting['PackageRedundancyMax'], goal['PackageRedundancyMax'])
         self.assertGreaterEqual(setting['PackageRedundancyMin'], goal['PackageRedundancyMin'])
+
+        # check LVStorageCapabilities
+        caps = self.wbemconnection.Associators(vgname, ResultClass="LMI_LVStorageCapabilities")
+        self.assertEqual(len(caps), 1)
+        cap = caps[0]
+        self.assertEqual(cap['DataRedundancyDefault'], setting['DataRedundancyGoal'])
+        self.assertEqual(cap['DataRedundancyMin'], setting['DataRedundancyMin'])
+        self.assertEqual(cap['DataRedundancyMax'], setting['DataRedundancyMax'])
+        self.assertEqual(cap['PackageRedundancyDefault'], setting['PackageRedundancyGoal'])
+        self.assertEqual(cap['PackageRedundancyMin'], setting['PackageRedundancyMin'])
+        self.assertEqual(cap['PackageRedundancyMax'], setting['PackageRedundancyMax'])
+        self.assertEqual(cap['ParityLayoutDefault'], setting['ParityLayout'])
+        self.assertEqual(cap['ExtentStripeLengthDefault'], goal['ExtentStripeLength'])
 
         (ret, outparams) = self.invoke_async_method(
                 'DeleteVG',

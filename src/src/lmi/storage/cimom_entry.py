@@ -71,6 +71,8 @@ from lmi.storage.LMI_FileSystemConfigurationService \
         import LMI_FileSystemConfigurationService
 from lmi.storage.LMI_FileSystemConfigurationCapabilities \
         import LMI_FileSystemConfigurationCapabilities
+from lmi.storage.LMI_FileSystemCapabilities \
+        import LMI_FileSystemCapabilities
 from lmi.providers.JobManager import JobManager
 from lmi.providers.IndicationManager import IndicationManager
 from lmi.storage.LMI_HostedFileSystem import LMI_HostedFileSystem
@@ -408,6 +410,14 @@ def get_providers(env):
             "LMI_FileSystemConfigurationElementCapabilities",
             cap_provider, service_provider, **opts)
     providers['LMI_FileSystemConfigurationElementCapabilities'] = assoc_provider
+
+    cap_provider = LMI_FileSystemCapabilities(**opts)
+    manager.add_capabilities_provider(cap_provider)
+    providers['LMI_FileSystemCapabilities'] = cap_provider
+    assoc_provider = ElementCapabilitiesProvider(
+            "LMI_FileSystemElementCapabilities",
+            cap_provider, service_provider, **opts)
+    providers['LMI_FileSystemElementCapabilities'] = assoc_provider
 
     provider = LMI_ResidesOnExtent(**opts)
     providers['LMI_ResidesOnExtent'] = provider

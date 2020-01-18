@@ -250,7 +250,7 @@ In this example, /mnt, that was mounted in Example 1, is unmounted.
        raise BaseException("Mountpoint does not exist: /mnt/test")
 
    (rc, out, err) = mount_service.SyncDeleteMount(
-        Mount=mnt.path,
+        Mount=mnt,
         Mode=32769)
 
 .. note::

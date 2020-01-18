@@ -56,6 +56,7 @@ Local properties
 
 ``uint16[]`` **PowerManagementCapabilities**
 
+    **Deprecated!** 
     An enumerated array describing the power management capabilities of the ComputerSystem. The use of this property has been deprecated. Instead, the Power Capabilites property in an associated PowerManagement Capabilities class should be used.
 
     
@@ -145,7 +146,6 @@ Local methods
 
 ``uint32`` **SetPowerState** (``uint32`` PowerState, ``datetime`` Time)
 
-    **Deprecated!** 
     Sets the power state of the computer. The use of this method has been deprecated. Instead, use the SetPowerState method in the associated PowerManagementService class.
 
     

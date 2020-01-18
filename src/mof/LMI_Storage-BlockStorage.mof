@@ -943,16 +943,6 @@ class LMI_PVFormat : LMI_DataFormat
     string UUID;
 };
 
-[ Version("0.5.1"), Experimental ]
-class LMI_MDRAIDFormatResidesOnExtent : LMI_ResidesOnExtent
-{
-};
-
-[ Version("0.5.1"), Experimental ]
-class LMI_PVFormatResidesOnExtent : LMI_ResidesOnExtent
-{
-};
-
 [ Version("0.5.1"), Experimental, Description("This association connects CIM_System with all"
     " storage devices available on it.")]
 class LMI_SystemStorageDevice : CIM_SystemDevice

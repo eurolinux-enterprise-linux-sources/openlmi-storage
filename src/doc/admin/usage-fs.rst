@@ -112,7 +112,7 @@ method::
     sda1 = ns.CIM_StorageExtent.first_instance({"Name": "/dev/sda1"})
     fs = sda1.first_associator(ResultClass='LMI_LocalFileSystem')
     (ret, outparams, err) = filesystem_service.SyncDeleteFileSystem(
-            TheFileSystem = fs.path)
+            TheFileSystem = fs)
 
 Note that with one btrfs on multiple block devices, the whole btrfs volume is
 destroyed.

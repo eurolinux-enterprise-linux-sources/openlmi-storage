@@ -60,16 +60,7 @@ class LMI_AttachedFileSystem(MountingProvider):
         path = model['Dependent']['MountPointPath']
 
         (device, fmt) = self.get_device_and_format_from_fs(fs)
-
-        if isinstance(device, blivet.devices.NoDevice):
-            paths = [device.format.mountpoint]
-        else:
-            paths = blivet.util.get_mount_paths(device.path)
-
-        if not paths:
-            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "No such mounted device: " + spec)
-        if path not in paths or device.path != spec:
-            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "%s is not mounted here: %s" % (spec, path))
+        self.check_get_instance(device, spec, path)
 
         return model
 

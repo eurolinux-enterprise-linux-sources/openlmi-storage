@@ -1,0 +1,72 @@
+commit 666f6bb82497286639cd83e7804f266c66eac419
+Author: Jan Safranek <jsafrane@redhat.com>
+Date:   Fri Jan 17 14:19:02 2014 +0100
+
+    Fixed reloading of mounts.
+    
+    We should refresh all blivet structures after (un)mount, otherwise the provider
+    allows deletion of a fs which has been just mounted (fs.mountpoint is None).
+
+diff --git a/src/lmi/storage/LMI_MountConfigurationService.py b/src/lmi/storage/LMI_MountConfigurationService.py
+index 37b9be5..a08935d 100644
+--- a/src/lmi/storage/LMI_MountConfigurationService.py
++++ b/src/lmi/storage/LMI_MountConfigurationService.py
+@@ -336,7 +336,11 @@ class LMI_MountConfigurationService(ServiceProvider, MountingProvider):
+             argv.append("-o")
+             argv.append(options)
+ 
+-        return subprocess.call(argv)
++        ret = subprocess.call(argv)
++        if ret == 0:
++            # fs mounted, refresh blivet structures
++            storage_reset(self.storage)
++        return ret
+ 
+     @cmpi_logging.trace_method
+     def cim_method_deletemount(self, env, object_name,
+@@ -434,6 +438,8 @@ class LMI_MountConfigurationService(ServiceProvider, MountingProvider):
+         if mode == self.MountMethod.Mode.Mode_4 or \
+            mode == self.MountMethod.Mode.Mode_32769:
+             rc = blivet.util.umount(mountpoint)
++            # reload blivet mount list
++            storage_reset(self.storage)
+ 
+             rval = self.MountMethod.Job_Completed_with_No_Error
+             state = Job.STATE_FINISHED_OK
+@@ -558,10 +564,10 @@ class LMI_MountConfigurationService(ServiceProvider, MountingProvider):
+         self.job_manager.add_job(job)
+ 
+         rval = self.RequestStateChange.Method_Parameters_Checked___Job_Started
+-        outparams.append(pywbem.CIMParameter(
++        outparams = [(pywbem.CIMParameter(
+                 name='Job',
+                 type='reference',
+-                value=job.get_name()))
++                value=job.get_name()))]
+         return (rval, outparams)
+ 
+     @cmpi_logging.trace_method
+diff --git a/src/lmi/storage/util/storage.py b/src/lmi/storage/util/storage.py
+index 5ef6bbb..02413d7 100644
+--- a/src/lmi/storage/util/storage.py
++++ b/src/lmi/storage/util/storage.py
+@@ -167,9 +167,16 @@ def do_storage_action(storage, actions):
+ 
+     finally:
+         if need_reset:
+-            os.system('udevadm trigger --subsystem-match block')
+-            os.system('udevadm settle')
+-            storage.reset()
++            storage_reset(storage)
++
++def storage_reset(storage):
++    """
++    Reset blivet instance. This causes blivet to re-read all block devices from
++    udev.
++    """
++    os.system('udevadm trigger --subsystem-match block')
++    os.system('udevadm settle')
++    storage.reset()
+ 
+ def log_storage_call(msg, args):
+     """

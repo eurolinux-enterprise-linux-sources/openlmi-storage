@@ -29,12 +29,12 @@ LMI_HostedMount
 
 import pywbem
 import blivet
-from lmi.storage.BaseProvider import BaseProvider
+from lmi.storage.MountingProvider import MountingProvider
 import lmi.providers.cmpi_logging as cmpi_logging
 from lmi.providers.ComputerSystem import get_system_name
 
 
-class LMI_HostedMount(BaseProvider):
+class LMI_HostedMount(MountingProvider):
     """Instrument the CIM class LMI_HostedMount
 
     CIM_Dependency is a generic association used to establish dependency
@@ -60,11 +60,7 @@ class LMI_HostedMount(BaseProvider):
         path = model['Dependent']['MountPointPath']
 
         device = self.storage.devicetree.getDeviceByPath(spec)
-
-        if device is None:
-            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "No such mounted device: " + spec)
-        if path not in blivet.util.get_mount_paths(spec):
-            raise pywbem.CIMError(pywbem.CIM_ERR_FAILED, "%s is not mounted here: %s" % (spec, path))
+        self.check_get_instance(device, spec, path)
 
         return model
 
